@@ -1,0 +1,38 @@
+* {
+  font-family: "Raleway", sans-serif;
+  /* font-weight: <weight>; */
+  font-style: normal;
+  /* text-align: center; */
+}
+
+
+
+h1 {
+    text-align: center;
+}
+
+#back {
+    text-align: left;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 20px;
+}
+
+h1 {
+    color: #333;
+}
+
+h2 {
+    color: #666;
+    margin-top: 40px;
+}
+
+img {
+    width: 800px;        
+    height: auto;        
+    border: 1px solid #ddd;
+    margin-top: 20px;
+}
