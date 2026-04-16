@@ -149,4 +149,40 @@ Visual encoding decisions:
 | 7 | May 18–20 | Final testing, proofread captions, finish and submit report | Final project submitted May 20 |
 
 ## SOURCES:
-- ClaudeAI used to parse Activity_Period into a date format, filter to Enplaned rows, and confirm the totals look right. Clean up airline naming inconsistencies. Build the chord diagram data structure (source-target pairs by region and year). 
+
+- D3.js: https://d3js.org/
+
+- d3-scale: https://d3js.org/d3-scale
+
+- d3-scale-chromatic: https://d3js.org/d3-scale-chromatic
+
+- d3-axis: https://d3js.org/d3-axis
+
+- d3-shape: https://d3js.org/d3-shape
+
+- d3-selection: https://d3js.org/d3-selection
+
+- d3-chord: https://d3js.org/d3-chord
+
+- d3-hierarchy: https://d3js.org/d3-hierarchy
+
+- D3 Graph Gallery - Heatmap: https://d3-graph-gallery.com/heatmap.html
+
+- D3 Graph Gallery - Stream graph: https://d3-graph-gallery.com/streamgraph.html
+
+- D3 Graph Gallery - Area chart: https://d3-graph-gallery.com/area.html
+
+- D3 Graph Gallery - Chord diagram: https://d3-graph-gallery.com/chord.html
+
+- D3 Stream graph example: https://observablehq.com/@d3/streamgraph
+
+- D3 Chord diagram example: https://observablehq.com/@d3/chord-diagram
+
+- D3 Calendar / Heatmap example: https://observablehq.com/@d3/calendar
+
+- Google Fonts: https://fonts.google.com/
+
+- Dataset: Air Traffic Passenger Statistics — SF Airport Commission via DataSF Open Data Portal
+https://data.sfgov.org/Transportation/Air-Traffic-Passenger-Statistics/rkru-6vcg
+
+- ClaudeAI used to parse Activity_Period into a date format, filter to Enplaned rows, and confirm the totals look right. Clean up airline naming inconsistencies. Build the chord diagram data structure (source-target pairs by region and year). : https://claude.ai
