@@ -1,0 +1,96 @@
+{
+  "pre": [
+    {
+      "region": "Asia",
+      "passengers": 41872990
+    },
+    {
+      "region": "Europe",
+      "passengers": 27043224
+    },
+    {
+      "region": "Canada",
+      "passengers": 13501224
+    },
+    {
+      "region": "Mexico",
+      "passengers": 8197195
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 4237986
+    },
+    {
+      "region": "Middle East",
+      "passengers": 1823390
+    },
+    {
+      "region": "Central America",
+      "passengers": 1582165
+    },
+    {
+      "region": "South America",
+      "passengers": 125095
+    }
+  ],
+  "crisis": [
+    {
+      "region": "Asia",
+      "passengers": 987226
+    },
+    {
+      "region": "Europe",
+      "passengers": 814322
+    },
+    {
+      "region": "Mexico",
+      "passengers": 622289
+    },
+    {
+      "region": "Canada",
+      "passengers": 329927
+    },
+    {
+      "region": "Middle East",
+      "passengers": 189148
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 164485
+    },
+    {
+      "region": "Central America",
+      "passengers": 116172
+    }
+  ],
+  "recovery": [
+    {
+      "region": "Asia",
+      "passengers": 10168548
+    },
+    {
+      "region": "Europe",
+      "passengers": 8024139
+    },
+    {
+      "region": "Canada",
+      "passengers": 3608546
+    },
+    {
+      "region": "Mexico",
+      "passengers": 2877848
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 1772569
+    },
+    {
+      "region": "Middle East",
+      "passengers": 1125785
+    },
+    {
+      "region": "Central America",
+      "passengers": 786486
+    }
+  ]
+}

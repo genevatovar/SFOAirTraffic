@@ -1,0 +1,826 @@
+{
+  "1999": [
+    {
+      "region": "Asia",
+      "passengers": 779079
+    },
+    {
+      "region": "Europe",
+      "passengers": 580433
+    },
+    {
+      "region": "Canada",
+      "passengers": 306070
+    },
+    {
+      "region": "Mexico",
+      "passengers": 160929
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 48045
+    },
+    {
+      "region": "Central America",
+      "passengers": 20534
+    }
+  ],
+  "2000": [
+    {
+      "region": "Asia",
+      "passengers": 1758112
+    },
+    {
+      "region": "Europe",
+      "passengers": 1202601
+    },
+    {
+      "region": "Canada",
+      "passengers": 644269
+    },
+    {
+      "region": "Mexico",
+      "passengers": 339110
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 91584
+    },
+    {
+      "region": "Central America",
+      "passengers": 38883
+    }
+  ],
+  "2001": [
+    {
+      "region": "Asia",
+      "passengers": 1652894
+    },
+    {
+      "region": "Europe",
+      "passengers": 1126450
+    },
+    {
+      "region": "Canada",
+      "passengers": 541784
+    },
+    {
+      "region": "Mexico",
+      "passengers": 339513
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 86083
+    },
+    {
+      "region": "Central America",
+      "passengers": 41342
+    }
+  ],
+  "2002": [
+    {
+      "region": "Asia",
+      "passengers": 1764985
+    },
+    {
+      "region": "Europe",
+      "passengers": 994013
+    },
+    {
+      "region": "Canada",
+      "passengers": 490067
+    },
+    {
+      "region": "Mexico",
+      "passengers": 256083
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 95968
+    },
+    {
+      "region": "Central America",
+      "passengers": 48674
+    }
+  ],
+  "2003": [
+    {
+      "region": "Asia",
+      "passengers": 1524261
+    },
+    {
+      "region": "Europe",
+      "passengers": 979595
+    },
+    {
+      "region": "Canada",
+      "passengers": 493967
+    },
+    {
+      "region": "Mexico",
+      "passengers": 218344
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 85333
+    },
+    {
+      "region": "Central America",
+      "passengers": 51972
+    }
+  ],
+  "2004": [
+    {
+      "region": "Asia",
+      "passengers": 1813597
+    },
+    {
+      "region": "Europe",
+      "passengers": 1052865
+    },
+    {
+      "region": "Canada",
+      "passengers": 511913
+    },
+    {
+      "region": "Mexico",
+      "passengers": 234789
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 119658
+    },
+    {
+      "region": "Central America",
+      "passengers": 58915
+    }
+  ],
+  "2005": [
+    {
+      "region": "Asia",
+      "passengers": 1888189
+    },
+    {
+      "region": "Europe",
+      "passengers": 1106221
+    },
+    {
+      "region": "Canada",
+      "passengers": 533007
+    },
+    {
+      "region": "Mexico",
+      "passengers": 323113
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 145555
+    },
+    {
+      "region": "Central America",
+      "passengers": 58413
+    }
+  ],
+  "2006": [
+    {
+      "region": "Asia",
+      "passengers": 1941678
+    },
+    {
+      "region": "Europe",
+      "passengers": 1079398
+    },
+    {
+      "region": "Canada",
+      "passengers": 595874
+    },
+    {
+      "region": "Mexico",
+      "passengers": 350227
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 218851
+    },
+    {
+      "region": "Central America",
+      "passengers": 55532
+    }
+  ],
+  "2007": [
+    {
+      "region": "Asia",
+      "passengers": 2050732
+    },
+    {
+      "region": "Europe",
+      "passengers": 1144729
+    },
+    {
+      "region": "Canada",
+      "passengers": 649566
+    },
+    {
+      "region": "Mexico",
+      "passengers": 319329
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 244616
+    },
+    {
+      "region": "Central America",
+      "passengers": 65080
+    }
+  ],
+  "2008": [
+    {
+      "region": "Asia",
+      "passengers": 2058200
+    },
+    {
+      "region": "Europe",
+      "passengers": 1179325
+    },
+    {
+      "region": "Canada",
+      "passengers": 622750
+    },
+    {
+      "region": "Mexico",
+      "passengers": 319976
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 236891
+    },
+    {
+      "region": "Central America",
+      "passengers": 50159
+    },
+    {
+      "region": "Middle East",
+      "passengers": 1766
+    }
+  ],
+  "2009": [
+    {
+      "region": "Asia",
+      "passengers": 1811498
+    },
+    {
+      "region": "Europe",
+      "passengers": 1096353
+    },
+    {
+      "region": "Canada",
+      "passengers": 590829
+    },
+    {
+      "region": "Mexico",
+      "passengers": 303916
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 234419
+    },
+    {
+      "region": "Middle East",
+      "passengers": 69686
+    },
+    {
+      "region": "Central America",
+      "passengers": 54424
+    }
+  ],
+  "2010": [
+    {
+      "region": "Asia",
+      "passengers": 1959485
+    },
+    {
+      "region": "Europe",
+      "passengers": 1080551
+    },
+    {
+      "region": "Canada",
+      "passengers": 659199
+    },
+    {
+      "region": "Mexico",
+      "passengers": 292550
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 220214
+    },
+    {
+      "region": "Middle East",
+      "passengers": 105343
+    },
+    {
+      "region": "Central America",
+      "passengers": 58310
+    },
+    {
+      "region": "South America",
+      "passengers": 18164
+    }
+  ],
+  "2011": [
+    {
+      "region": "Asia",
+      "passengers": 1943170
+    },
+    {
+      "region": "Europe",
+      "passengers": 1194763
+    },
+    {
+      "region": "Canada",
+      "passengers": 645398
+    },
+    {
+      "region": "Mexico",
+      "passengers": 299411
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 203247
+    },
+    {
+      "region": "Middle East",
+      "passengers": 106998
+    },
+    {
+      "region": "Central America",
+      "passengers": 63316
+    },
+    {
+      "region": "South America",
+      "passengers": 33091
+    }
+  ],
+  "2012": [
+    {
+      "region": "Asia",
+      "passengers": 2028024
+    },
+    {
+      "region": "Europe",
+      "passengers": 1247285
+    },
+    {
+      "region": "Canada",
+      "passengers": 626625
+    },
+    {
+      "region": "Mexico",
+      "passengers": 427375
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 192850
+    },
+    {
+      "region": "Middle East",
+      "passengers": 112568
+    },
+    {
+      "region": "Central America",
+      "passengers": 65695
+    },
+    {
+      "region": "South America",
+      "passengers": 32481
+    }
+  ],
+  "2013": [
+    {
+      "region": "Asia",
+      "passengers": 2008730
+    },
+    {
+      "region": "Europe",
+      "passengers": 1355498
+    },
+    {
+      "region": "Canada",
+      "passengers": 641562
+    },
+    {
+      "region": "Mexico",
+      "passengers": 416764
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 212470
+    },
+    {
+      "region": "Middle East",
+      "passengers": 107966
+    },
+    {
+      "region": "Central America",
+      "passengers": 64259
+    },
+    {
+      "region": "South America",
+      "passengers": 33263
+    }
+  ],
+  "2014": [
+    {
+      "region": "Asia",
+      "passengers": 2088852
+    },
+    {
+      "region": "Europe",
+      "passengers": 1413061
+    },
+    {
+      "region": "Canada",
+      "passengers": 704900
+    },
+    {
+      "region": "Mexico",
+      "passengers": 502020
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 197110
+    },
+    {
+      "region": "Middle East",
+      "passengers": 131582
+    },
+    {
+      "region": "Central America",
+      "passengers": 61450
+    },
+    {
+      "region": "South America",
+      "passengers": 8096
+    }
+  ],
+  "2015": [
+    {
+      "region": "Asia",
+      "passengers": 2196345
+    },
+    {
+      "region": "Europe",
+      "passengers": 1584562
+    },
+    {
+      "region": "Canada",
+      "passengers": 774785
+    },
+    {
+      "region": "Mexico",
+      "passengers": 508333
+    },
+    {
+      "region": "Middle East",
+      "passengers": 217106
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 193443
+    },
+    {
+      "region": "Central America",
+      "passengers": 80066
+    }
+  ],
+  "2016": [
+    {
+      "region": "Asia",
+      "passengers": 2373144
+    },
+    {
+      "region": "Europe",
+      "passengers": 1683135
+    },
+    {
+      "region": "Canada",
+      "passengers": 776580
+    },
+    {
+      "region": "Mexico",
+      "passengers": 594482
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 288398
+    },
+    {
+      "region": "Middle East",
+      "passengers": 243856
+    },
+    {
+      "region": "Central America",
+      "passengers": 121333
+    }
+  ],
+  "2017": [
+    {
+      "region": "Asia",
+      "passengers": 2594545
+    },
+    {
+      "region": "Europe",
+      "passengers": 1820259
+    },
+    {
+      "region": "Canada",
+      "passengers": 835913
+    },
+    {
+      "region": "Mexico",
+      "passengers": 687167
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 315945
+    },
+    {
+      "region": "Middle East",
+      "passengers": 236368
+    },
+    {
+      "region": "Central America",
+      "passengers": 151883
+    }
+  ],
+  "2018": [
+    {
+      "region": "Asia",
+      "passengers": 2753993
+    },
+    {
+      "region": "Europe",
+      "passengers": 1949153
+    },
+    {
+      "region": "Canada",
+      "passengers": 895123
+    },
+    {
+      "region": "Mexico",
+      "passengers": 660832
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 362307
+    },
+    {
+      "region": "Middle East",
+      "passengers": 230604
+    },
+    {
+      "region": "Central America",
+      "passengers": 188344
+    }
+  ],
+  "2019": [
+    {
+      "region": "Asia",
+      "passengers": 2883477
+    },
+    {
+      "region": "Europe",
+      "passengers": 2172974
+    },
+    {
+      "region": "Canada",
+      "passengers": 961043
+    },
+    {
+      "region": "Mexico",
+      "passengers": 642932
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 444999
+    },
+    {
+      "region": "Middle East",
+      "passengers": 259547
+    },
+    {
+      "region": "Central America",
+      "passengers": 183581
+    }
+  ],
+  "2020": [
+    {
+      "region": "Asia",
+      "passengers": 617333
+    },
+    {
+      "region": "Europe",
+      "passengers": 380392
+    },
+    {
+      "region": "Mexico",
+      "passengers": 209446
+    },
+    {
+      "region": "Canada",
+      "passengers": 174099
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 128752
+    },
+    {
+      "region": "Middle East",
+      "passengers": 54109
+    },
+    {
+      "region": "Central America",
+      "passengers": 44985
+    }
+  ],
+  "2021": [
+    {
+      "region": "Europe",
+      "passengers": 433930
+    },
+    {
+      "region": "Mexico",
+      "passengers": 412843
+    },
+    {
+      "region": "Asia",
+      "passengers": 369893
+    },
+    {
+      "region": "Canada",
+      "passengers": 155828
+    },
+    {
+      "region": "Middle East",
+      "passengers": 135039
+    },
+    {
+      "region": "Central America",
+      "passengers": 71187
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 35733
+    }
+  ],
+  "2022": [
+    {
+      "region": "Europe",
+      "passengers": 1729355
+    },
+    {
+      "region": "Asia",
+      "passengers": 1165191
+    },
+    {
+      "region": "Canada",
+      "passengers": 721055
+    },
+    {
+      "region": "Mexico",
+      "passengers": 643004
+    },
+    {
+      "region": "Middle East",
+      "passengers": 299913
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 272371
+    },
+    {
+      "region": "Central America",
+      "passengers": 146053
+    }
+  ],
+  "2023": [
+    {
+      "region": "Asia",
+      "passengers": 2446185
+    },
+    {
+      "region": "Europe",
+      "passengers": 2015679
+    },
+    {
+      "region": "Canada",
+      "passengers": 927985
+    },
+    {
+      "region": "Mexico",
+      "passengers": 687945
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 451637
+    },
+    {
+      "region": "Middle East",
+      "passengers": 304281
+    },
+    {
+      "region": "Central America",
+      "passengers": 164182
+    }
+  ],
+  "2024": [
+    {
+      "region": "Asia",
+      "passengers": 3099018
+    },
+    {
+      "region": "Europe",
+      "passengers": 2083266
+    },
+    {
+      "region": "Canada",
+      "passengers": 980839
+    },
+    {
+      "region": "Mexico",
+      "passengers": 740079
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 492586
+    },
+    {
+      "region": "Middle East",
+      "passengers": 247813
+    },
+    {
+      "region": "Central America",
+      "passengers": 206019
+    }
+  ],
+  "2025": [
+    {
+      "region": "Asia",
+      "passengers": 3196286
+    },
+    {
+      "region": "Europe",
+      "passengers": 2082584
+    },
+    {
+      "region": "Canada",
+      "passengers": 928122
+    },
+    {
+      "region": "Mexico",
+      "passengers": 745985
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 496723
+    },
+    {
+      "region": "Middle East",
+      "passengers": 249766
+    },
+    {
+      "region": "Central America",
+      "passengers": 248239
+    }
+  ],
+  "2026": [
+    {
+      "region": "Asia",
+      "passengers": 261868
+    },
+    {
+      "region": "Europe",
+      "passengers": 113255
+    },
+    {
+      "region": "Mexico",
+      "passengers": 60835
+    },
+    {
+      "region": "Australia / Oceania",
+      "passengers": 59252
+    },
+    {
+      "region": "Canada",
+      "passengers": 50545
+    },
+    {
+      "region": "Middle East",
+      "passengers": 24012
+    },
+    {
+      "region": "Central America",
+      "passengers": 21993
+    }
+  ]
+}

@@ -1,19 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>Geneva Tovar Data Visualizations Final Project</title>
-	<link rel="stylesheet" href="css/styles.css">
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SFO Air Traffic</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-    <title>
-        <h1>SFO Air Traffic Passenger Trends</h1>
-        <p>Author: Geneva Tovar<br>
-            University of San Francisco
-        </p>
-    </title>
+
+<!-- ── Header ─────────────────────────────────────────────────────────────── -->
+<section class="hero" style="min-height: 40vh;">
+  <h1>SFO through Crisis:<br>A Passenger Story</h1>
+  <p class="hero-label">CS 360 · Data Visualization · Geneva Tovar</p>
+  <p>When the world stops moving, airports feel it first.</p>
+</section>
+
+<section class ="description">
+  <p>SFO is one of the most recognized airports in the United States, known for its museum exhibits, dining, and sensory rooms. 
+    But behind that reputation is a passenger traffic story shaped by forces far outside the airport's control. 
+    This project traces over 25 years of monthly enplaned passenger data, from the aftermath of 9/11 and the 2008 
+    recession to the near-total collapse of air travel during COVID-19 and the slow climb back. Through four visualizations,
+     it explores how deep each disruption cut, whether domestic and international routes recovered at the same pace, which airlines
+      grew or pulled back, and what seasonal patterns look like when you zoom out across two and a half decades.</p>
+</section>
+
+<!-- ── Viz 1: Calendar Heat Map ───────────────────────────────────────────── -->
+<div class="viz-section">
+  <p class="viz-label">01 — Overview</p>
+  <p class="viz-title">Monthly enplaned passengers at SFO (1999–2026)</p>
+  <p class="viz-sub">Each cell = one month · darker = more passengers · hover for details</p>
+  <div id="heatmap-container"></div>
+</div>
+
+<!-- ── Viz 2: Small Multiples ─────────────────────────────────────────────── -->
+<div class="viz-section">
+  <p class="viz-label">02 — Recovery</p>
+  <p class="viz-title">Domestic vs. international recovery</p>
+  <p class="viz-sub">Monthly enplaned passengers · shared y-axis scale · hover for details</p>
+  <div id="smallmultiples-container"></div>
+</div>
+
+<!-- ── Viz 3: Stream Graph ────────────────────────────────────────────────── -->
+<div class="viz-section">
+  <p class="viz-label">03 — Airlines</p>
+  <p class="viz-title">Airline market share at SFO (1999–2026)</p>
+  <p class="viz-sub">Annual enplaned passengers by carrier · hover for details</p>
+  <div id="streamgraph-container"></div>
+</div>
+
+<!-- ── Viz 4: Chord Diagram ───────────────────────────────────────────────── -->
+<div class="viz-section">
+  <p class="viz-label">04 — Global</p>
+  <p class="viz-title">International passengers by destination region</p>
+  <p class="viz-sub">Arc thickness = total enplaned passengers · toggle between eras</p>
+  <div class="era-toggle">
+    <button class="era-btn active" onclick="setEra('pre', this)">Pre-COVID (1999–2019)</button>
+    <button class="era-btn" onclick="setEra('crisis', this)">Crisis (2020–2021)</button>
+    <button class="era-btn" onclick="setEra('recovery', this)">Recovery (2022–2026)</button>
+  </div>
+  <div id="chord-container"></div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<!-- Chart scripts — each file calls draw() itself -->
+<script src="js/heatmap.js"></script>
+<script src="js/smallmultiples.js"></script>
+<script src="js/stream.js"></script>
+<script src="js/chord.js"></script>
 
 </body>
 </html>

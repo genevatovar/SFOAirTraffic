@@ -147,3 +147,6 @@ Visual encoding decisions:
 | 5 | May 5–11 | Build airline stacked area chart, write all narrative captions | All three visualizations complete, full scroll flow working end to end *(Presentation May 11)* |
 | 6 | May 12–17 | Polish layout, colors, typography; add tooltips; start project report | Polished draft and report outline *(Report draft due May 17)* |
 | 7 | May 18–20 | Final testing, proofread captions, finish and submit report | Final project submitted May 20 |
+
+## SOURCES:
+- ClaudeAI used to parse Activity_Period into a date format, filter to Enplaned rows, and confirm the totals look right. Clean up airline naming inconsistencies. Build the chord diagram data structure (source-target pairs by region and year). 
