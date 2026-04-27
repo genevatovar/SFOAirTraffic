@@ -50,16 +50,28 @@ body {
   color: rgba(255,255,255,0.6);
 }
 
-/* ── Description ── */
-.description p {
-  text-align: center;
+.hero-tagline {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.5);
+  font-style: italic;
+  margin-top: 0.5rem;
 }
 
-p {
-  width: 50%; /* or any specific width */
-  margin: 0 auto;
-  padding: 20px;
+/* ── Description ── */
+
+.description {
+  max-width: 760px;
+  margin: 3rem auto;
+  padding: 0 2rem;
 }
+
+.description p {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--muted);
+  line-height: 1.85;
+}
+
 
 /* ── Viz sections ── */
 .viz-section {
@@ -88,6 +100,12 @@ p {
   font-size: 13px;
   color: var(--muted);
   margin-bottom: 1.25rem;
+  margin-top: 0;
+}
+
+.viz-section svg {
+  display: block;
+  margin: 0 auto;
 }
 
 /* ── D3 shared ── */
@@ -106,3 +124,127 @@ p {
 
 .legend-title { font-size: 13px; font-weight: bold; font-family: 'Raleway', sans-serif; fill: var(--ink); }
 .legend-label { font-size: 12px; font-family: 'Nunito', sans-serif; fill: #333; }
+
+
+/* ── Scrollytelling — Story-style spotlight layout ──────────────────────── */
+#scrolly {
+  position: relative;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+/* Sticky chart — fills the right 65% of the screen */
+.sticky-figure {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  flex: 0 0 65%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 3rem;
+  align-self: flex-start;
+  background: var(--cream);
+  border-left: 1px solid var(--border, #dddbd3);
+}
+
+.sticky-figure svg {
+  max-width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* All panels hidden, only active shows */
+.viz-panel {
+  display: none;
+  width: 100%;
+}
+
+.viz-panel.is-active {
+  display: block;
+}
+
+/* Step cards column — 35% left strip */
+article {
+  flex: 0 0 35%;
+  padding: 0;
+}
+
+/* ── Step cards — Story spotlight style ─────────────────────────────────── */
+.step {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4rem 3rem;
+  opacity: 0.25;
+  transition: opacity 0.4s ease;
+  border-bottom: 1px solid var(--border, #dddbd3);
+}
+
+.step:last-child {
+  border-bottom: none;
+}
+
+.step.is-active {
+  opacity: 1;
+}
+
+.step-number {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+.step h2 {
+  font-family: 'Raleway', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.step p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.8;
+  width: auto;
+  padding: 0;
+  margin: 0;
+}
+
+/* ── Outro — Story footer style ─────────────────────────────────────────── */
+.outro {
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--ink);
+  color: #fff;
+}
+
+.outro h2 {
+  font-family: 'Raleway', sans-serif;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 800;
+  max-width: 620px;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.outro p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  width: auto;
+  padding: 0;
+}

@@ -7,8 +7,10 @@
 // Tooltip: vertical crosshair via bisect
 
 function drawStream(data) {
-  const width = 960, height = 520;
-  const margin = { top: 70, right: 230, bottom: 80, left: 80 };
+  const container = document.getElementById("streamgraph-container");
+  const width = container.clientWidth || 900;
+  const height = Math.round(width * 0.54);
+  const margin = { top: 70, right: 180, bottom: 80, left: 60 };
   const plot_width  = width  - margin.left - margin.right;
   const plot_height = height - margin.top  - margin.bottom;
 

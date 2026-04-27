@@ -186,3 +186,5 @@ Visual encoding decisions:
 https://data.sfgov.org/Transportation/Air-Traffic-Passenger-Statistics/rkru-6vcg
 
 - ClaudeAI used to parse Activity_Period into a date format, filter to Enplaned rows, and confirm the totals look right. Clean up airline naming inconsistencies. Build the chord diagram data structure (source-target pairs by region and year). : https://claude.ai
+
+- Used Scrollama examples provided by Professor Joshi

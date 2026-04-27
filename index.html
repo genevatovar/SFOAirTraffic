@@ -3,76 +3,98 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SFO Air Traffic</title>
+  <title>SFO Through Crisis: A Passenger Story</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/scrollama/3.2.0/scrollama.min.js"></script>
 </head>
 <body>
 
-<!-- ── Header ─────────────────────────────────────────────────────────────── -->
-<section class="hero" style="min-height: 40vh;">
-  <h1>SFO through Crisis:<br>A Passenger Story</h1>
+<!-- ── Hero ───────────────────────────────────────────────────────────────── -->
+<section class="hero">
   <p class="hero-label">CS 360 · Data Visualization · Geneva Tovar</p>
-  <p>When the world stops moving, airports feel it first.</p>
+  <h1>SFO Through Crisis:<br>A Passenger Story</h1>
+  <p class="hero-tagline">When the world stops moving, airports feel it first.</p>
 </section>
 
-<section class ="description">
-  <p>SFO is one of the most recognized airports in the United States, known for its museum exhibits, dining, and sensory rooms. 
-    But behind that reputation is a passenger traffic story shaped by forces far outside the airport's control. 
-    This project traces over 25 years of monthly enplaned passenger data, from the aftermath of 9/11 and the 2008 
-    recession to the near-total collapse of air travel during COVID-19 and the slow climb back. Through four visualizations,
-     it explores how deep each disruption cut, whether domestic and international routes recovered at the same pace, which airlines
-      grew or pulled back, and what seasonal patterns look like when you zoom out across two and a half decades.</p>
+<!-- ── Description ────────────────────────────────────────────────────────── -->
+<section class="description">
+  <p>SFO is one of the most recognized airports in the United States, known for its
+  museum exhibits, dining, and sensory rooms. But behind that reputation is a passenger
+  traffic story shaped by forces far outside the airport's control. This project traces
+  over 25 years of monthly enplaned passenger data, from the aftermath of 9/11 and the
+  2008 recession to the near-total collapse of air travel during COVID-19 and the slow
+  climb back. Through four visualizations, it explores how deep each disruption cut,
+  whether domestic and international routes recovered at the same pace, which airlines
+  grew or pulled back, and what seasonal patterns look like when you zoom out across
+  two and a half decades.</p>
 </section>
 
-<!-- ── Viz 1: Calendar Heat Map ───────────────────────────────────────────── -->
-<div class="viz-section">
-  <p class="viz-label">01 — Overview</p>
-  <p class="viz-title">Monthly enplaned passengers at SFO (1999–2026)</p>
-  <p class="viz-sub">Each cell = one month · darker = more passengers · hover for details</p>
-  <div id="heatmap-container"></div>
-</div>
+<!-- ── Scrollytelling ─────────────────────────────────────────────────────── -->
+<section id="scrolly">
 
-<!-- ── Viz 2: Small Multiples ─────────────────────────────────────────────── -->
-<div class="viz-section">
-  <p class="viz-label">02 — Recovery</p>
-  <p class="viz-title">Domestic vs. international recovery</p>
-  <p class="viz-sub">Monthly enplaned passengers · shared y-axis scale · hover for details</p>
-  <div id="smallmultiples-container"></div>
-</div>
+  <figure class="sticky-figure">
+    <div class="viz-panel" id="heatmap-container"></div>
+    <div class="viz-panel" id="smallmultiples-container"></div>
+    <div class="viz-panel" id="streamgraph-container"></div>
+    <div class="viz-panel" id="chord-container">
+      <div class="era-toggle">
+        <button class="era-btn active" onclick="setEra('pre', this)">Pre-COVID (1999–2019)</button>
+        <button class="era-btn" onclick="setEra('crisis', this)">Crisis (2020–2021)</button>
+        <button class="era-btn" onclick="setEra('recovery', this)">Recovery (2022–2026)</button>
+      </div>
+    </div>
+  </figure>
 
-<!-- ── Viz 3: Stream Graph ────────────────────────────────────────────────── -->
-<div class="viz-section">
-  <p class="viz-label">03 — Airlines</p>
-  <p class="viz-title">Airline market share at SFO (1999–2026)</p>
-  <p class="viz-sub">Annual enplaned passengers by carrier · hover for details</p>
-  <div id="streamgraph-container"></div>
-</div>
+  <article>
+    <div class="step" data-step="0">
+      <p class="step-number">01 — Overview</p>
+      <h2>Seeing the full picture</h2>
+      <p>Each cell is one month at SFO. The darker the cell, the more passengers
+      flew that month. Summer peaks repeat every year — until COVID-19 nearly
+      wipes out an entire row in 2020.</p>
+    </div>
+    <div class="step" data-step="1">
+      <p class="step-number">02 — Recovery</p>
+      <h2>Domestic vs. international</h2>
+      <p>Domestic routes bounced back faster. International traffic lagged
+      significantly — travel bans, closed borders, and reduced demand kept
+      those routes suppressed well into 2022.</p>
+    </div>
+    <div class="step" data-step="2">
+      <p class="step-number">03 — Airlines</p>
+      <h2>Who grew, who pulled back</h2>
+      <p>United dominates SFO throughout, but the pandemic reshuffled the
+      carriers below it. Some never returned to their pre-COVID volume,
+      while others used the disruption to grow their share.</p>
+    </div>
+    <div class="step" data-step="3">
+      <p class="step-number">04 — Global</p>
+      <h2>Where SFO connects</h2>
+      <p>Asia and Europe anchor SFO's international reach. Toggle between
+      eras to watch those connections shrink during the crisis and slowly
+      rebuild through recovery.</p>
+    </div>
+  </article>
 
-<!-- ── Viz 4: Chord Diagram ───────────────────────────────────────────────── -->
-<div class="viz-section">
-  <p class="viz-label">04 — Global</p>
-  <p class="viz-title">International passengers by destination region</p>
-  <p class="viz-sub">Arc thickness = total enplaned passengers · toggle between eras</p>
-  <div class="era-toggle">
-    <button class="era-btn active" onclick="setEra('pre', this)">Pre-COVID (1999–2019)</button>
-    <button class="era-btn" onclick="setEra('crisis', this)">Crisis (2020–2021)</button>
-    <button class="era-btn" onclick="setEra('recovery', this)">Recovery (2022–2026)</button>
-  </div>
-  <div id="chord-container"></div>
-</div>
+</section>
 
-<div class="tooltip" id="tooltip"></div>
+<!-- ── Outro ──────────────────────────────────────────────────────────────── -->
+<section class="outro">
+  <h2>25 years of taking off —<br>and coming back.</h2>
+  <p>Data: Air Traffic Passenger Statistics · SF Airport Commission via DataSF</p>
+</section>
 
-<!-- Chart scripts — each file calls draw() itself -->
+<!-- Chart scripts -->
 <script src="js/heatmap.js"></script>
 <script src="js/smallmultiples.js"></script>
 <script src="js/stream.js"></script>
 <script src="js/chord.js"></script>
+<script src="js/scrollama.js"></script>
 
 </body>
 </html>
