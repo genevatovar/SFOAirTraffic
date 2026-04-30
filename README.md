@@ -2,7 +2,7 @@
 
 > CS 360 Final Project
 
-> A data visualization project exploring how major disruptions shaped passenger traffic at San Francisco International Airport from 2005 to the present.
+> A data visualization project exploring how major disruptions shaped passenger traffic at San Francisco International Airport from 1999 to the present.
 
 **Author:** Geneva Tovar
 **Course:** CS 360 Spring 2026
@@ -17,7 +17,7 @@ This project explores how a major airport like SFO holds up during large-scale d
 
 ## Project Objectives
 
-This project visualizes monthly SFO passenger traffic data from 2005 to the present to answer three questions:
+This project visualizes monthly SFO passenger traffic data from 1999 to the present to answer three questions:
 
 1. **Crisis impact and recovery** — How did major historical crises, including the 2008 recession and the COVID-19 pandemic, disrupt passenger traffic at SFO, and how long did each recovery take?
 2. **Domestic vs. international recovery** — Did domestic and international passenger traffic recover at different rates after each disruption? Which segment of air travel is more vulnerable during a crisis?
@@ -29,7 +29,7 @@ This project visualizes monthly SFO passenger traffic data from 2005 to the pres
 
 **Source:** [Air Traffic Passenger Statistics](https://data.sfgov.org/) published by the SF Airport Commission through the DataSF open data portal.
 
-The dataset contains monthly traffic records at SFO from July 2005 through the present, updated quarterly.
+The dataset contains monthly traffic records at SFO from July 1999 through the present, updated quarterly.
 
 **Key columns used:**
 
@@ -83,7 +83,7 @@ The user scrolls through a guided story about SFO's passenger traffic history, w
 ### Three Prototype Designs
 
 **Design 1 — Single annotated line chart**
-One continuous line showing total monthly passenger count from 2005 to present, with shaded crisis bands and text labels for key events. Simple and readable at a glance. Does not break down domestic vs. international or individual airlines.
+One continuous line showing total monthly passenger count from 1999 to present, with shaded crisis bands and text labels for key events. Simple and readable at a glance. Does not break down domestic vs. international or individual airlines.
 
 **Design 2 — Small multiples**
 Two side-by-side line charts, one domestic and one international, on a shared y-axis scale with aligned crisis bands. Directly addresses Objective 2 by making recovery rate differences easy to compare. Takes up more space and loses the unified total-traffic view.
@@ -120,7 +120,7 @@ Visual encoding decisions:
 
 ### Must-Have
 
-- Annotated time-series line chart of total monthly SFO passenger volume (2005–present) with shaded crisis windows and event labels *(Objective 1)*
+- Annotated time-series line chart of total monthly SFO passenger volume (1999) with shaded crisis windows and event labels *(Objective 1)*
 - Small multiples comparing domestic vs. international traffic over the same period, with aligned crisis bands *(Objective 2)*
 - Per-airline trend view of top airlines as a stacked area chart *(Objective 3)*
 - Scrollytelling structure with narrative captions at each step
@@ -166,6 +166,12 @@ Visual encoding decisions:
 
 - d3-hierarchy: https://d3js.org/d3-hierarchy
 
+- d3-time-format: https://d3js.org/d3-time-format
+
+- d3-array: https://d3js.org/d3-array
+
+- d3-transition: https://d3js.org/d3-transition
+
 - D3 Graph Gallery - Heatmap: https://d3-graph-gallery.com/heatmap.html
 
 - D3 Graph Gallery - Stream graph: https://d3-graph-gallery.com/streamgraph.html
@@ -174,17 +180,36 @@ Visual encoding decisions:
 
 - D3 Graph Gallery - Chord diagram: https://d3-graph-gallery.com/chord.html
 
+- D3 Graph Gallery - Line chart: https://d3-graph-gallery.com/line.html
+
 - D3 Stream graph example: https://observablehq.com/@d3/streamgraph
 
 - D3 Chord diagram example: https://observablehq.com/@d3/chord-diagram
 
 - D3 Calendar / Heatmap example: https://observablehq.com/@d3/calendar
 
+- D3 Small Multiples example: https://observablehq.com/@d3/small-multiples
+
+- D3 Bisect / Crosshair tooltip: https://observablehq.com/@d3/line-chart-with-tooltip
+
+- D3 Stack / Area chart: https://observablehq.com/@d3/stacked-area-chart
+
+- Scrollama.js: https://github.com/russellsamora/scrollama
+
+- "How to Implement Scrollytelling with Six Different Libraries" — The Pudding: https://pudding.cool/process/how-to-implement-scrollytelling/
+
+- Intersection Observer API: https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
+
+- CSS color-mix(): https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix
+
+- CSS clamp(): https://developer.mozilla.org/en-US/docs/Web/CSS/clamp
+
+- SVG clipPath: https://developer.mozilla.org/en-US/docs/Web/SVG/Element/clipPath
+
 - Google Fonts: https://fonts.google.com/
 
-- Dataset: Air Traffic Passenger Statistics — SF Airport Commission via DataSF Open Data Portal
-https://data.sfgov.org/Transportation/Air-Traffic-Passenger-Statistics/rkru-6vcg
+- Dataset: Air Traffic Passenger Statistics — SF Airport Commission via DataSF Open Data Portal: https://data.sfgov.org/Transportation/Air-Traffic-Passenger-Statistics/rkru-6vcg
 
-- ClaudeAI used to parse Activity_Period into a date format, filter to Enplaned rows, and confirm the totals look right. Clean up airline naming inconsistencies. Build the chord diagram data structure (source-target pairs by region and year). : https://claude.ai
+- Claude AI used to parse Activity_Period into a date format, filter to Enplaned rows, and confirm the totals look right. Clean up airline naming inconsistencies.
 
 - Used Scrollama examples provided by Professor Joshi

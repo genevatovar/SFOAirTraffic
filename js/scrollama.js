@@ -38,3 +38,16 @@ scroller
 
 // Handle window resize
 window.addEventListener("resize", scroller.resize);
+
+// ── Fade-in on scroll ─────────────────────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('is-visible');
+    }
+  });
+}, { threshold: 0.15 });  // triggers when 15% of element is visible
+
+// Observe all story steps and their children
+document.querySelectorAll('.story-step, .story-header, .story-viz, .story-body, .intro')
+  .forEach(el => observer.observe(el));

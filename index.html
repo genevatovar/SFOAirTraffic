@@ -7,7 +7,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/scrollama/3.2.0/scrollama.min.js"></script>
@@ -15,14 +15,22 @@
 <body>
 
 <!-- ── Hero ───────────────────────────────────────────────────────────────── -->
-<section class="hero">
-  <p class="hero-label">CS 360 · Data Visualization · Geneva Tovar</p>
+<section class="hero" style="
+  background-image: url('img/sfo-img.png');
+  height: 500px;
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  background-position: center top;
+  ">
+  <p class="hero-label">CS 360 · Data Visualizations · Geneva Tovar</p>
   <h1>SFO Through Crisis:<br>A Passenger Story</h1>
   <p class="hero-tagline">When the world stops moving, airports feel it first.</p>
 </section>
 
-<!-- ── Description ────────────────────────────────────────────────────────── -->
-<section class="description">
+
+<!-- ── Description ───────────────────────────────────────────────────────────────── -->
+<section class="intro">
+  <h3><b>25 Years of Disruption</b></h3>
   <p>SFO is one of the most recognized airports in the United States, known for its
   museum exhibits, dining, and sensory rooms. But behind that reputation is a passenger
   traffic story shaped by forces far outside the airport's control. This project traces
@@ -37,49 +45,67 @@
 <!-- ── Scrollytelling ─────────────────────────────────────────────────────── -->
 <section id="scrolly">
 
-  <figure class="sticky-figure">
-    <div class="viz-panel" id="heatmap-container"></div>
-    <div class="viz-panel" id="smallmultiples-container"></div>
-    <div class="viz-panel" id="streamgraph-container"></div>
-    <div class="viz-panel" id="chord-container">
+  <div class="story-step" id="step-heatmap" style="--step-bg: var(--sfo-60-black); --step-accent: var(--sfo-75-white);">
+    <div class="story-header">
+      <p class="step-number">01 — Overview</p>
+      <h2>Seeing the Full Picture</h2>
+    </div>
+    <div class="story-viz" id="heatmap-container"></div>
+    <div class="story-body">
+      <p>Each cell is one month at SFO. The darker the cell, the more passengers flew that month.
+      Summer peaks repeat like clockwork every year until COVID-19 nearly wipes out an entire
+      row in 2020. No single event before it came close to the same scale of disruption.</p>
+    </div>
+  </div>
+
+  <div class="story-step" id="step-chord" style="--step-bg: var(--sfo-25-black); --step-accent: var(--sfo-75-white);"> 
+    <div class="story-header">
+      <p class="step-number">02 — Global</p>
+      <h2>Where SFO Connects</h2>
+    </div>
+    <div class="story-viz" id="chord-container">
       <div class="era-toggle">
-        <button class="era-btn active" onclick="setEra('pre', this)">Pre-COVID (1999–2019)</button>
-        <button class="era-btn" onclick="setEra('crisis', this)">Crisis (2020–2021)</button>
+        <button class="era-btn active" onclick="setEra('pre_recession', this)">Pre-Recession (1999–2007)</button>
+        <button class="era-btn" onclick="setEra('recession', this)">Recession (2008–2010)</button>
+        <button class="era-btn" onclick="setEra('post_recession', this)">Pre-COVID Peak (2011–2019)</button>
+        <button class="era-btn" onclick="setEra('covid', this)">COVID Crisis (2020–2021)</button>
         <button class="era-btn" onclick="setEra('recovery', this)">Recovery (2022–2026)</button>
       </div>
     </div>
-  </figure>
+    <div class="story-body">
+      <p>Asia and Europe anchor SFO's international reach. Toggle between eras to watch
+      those connections shrink during the crisis and slowly rebuild through recovery.
+      Some routes that existed before 2020 have not returned at all.</p>
+    </div>
+  </div>
 
-  <article>
-    <div class="step" data-step="0">
-      <p class="step-number">01 — Overview</p>
-      <h2>Seeing the full picture</h2>
-      <p>Each cell is one month at SFO. The darker the cell, the more passengers
-      flew that month. Summer peaks repeat every year — until COVID-19 nearly
-      wipes out an entire row in 2020.</p>
+  <div class="story-step" id="step-multiples" style="--step-bg: var(--sfo-20-black); --step-accent: var(--sfo-50-white);">
+    <div class="story-header">
+      <p class="step-number">03 — Recovery</p>
+      <h2>Domestic vs. International</h2>
     </div>
-    <div class="step" data-step="1">
-      <p class="step-number">02 — Recovery</p>
-      <h2>Domestic vs. international</h2>
-      <p>Domestic routes bounced back faster. International traffic lagged
-      significantly — travel bans, closed borders, and reduced demand kept
-      those routes suppressed well into 2022.</p>
+    <div class="story-viz" id="smallmultiples-container"></div>
+    <div class="story-body">
+      <p>Domestic routes bounced back faster. International traffic lagged significantly —
+      travel bans, closed borders, and reduced demand kept those routes suppressed well
+      into 2022. The gap between the two tells a story of uneven recovery across two
+      very different passenger markets.</p>
     </div>
-    <div class="step" data-step="2">
-      <p class="step-number">03 — Airlines</p>
-      <h2>Who grew, who pulled back</h2>
-      <p>United dominates SFO throughout, but the pandemic reshuffled the
-      carriers below it. Some never returned to their pre-COVID volume,
-      while others used the disruption to grow their share.</p>
+  </div>
+
+  <div class="story-step" id="step-stream" style="--step-bg: var(--sfo-60-black); --step-accent: var(--sfo-25-white);">
+    <div class="story-header">
+      <p class="step-number">04 — Airlines</p>
+      <h2>Who Grew, Who Pulled Back</h2>
     </div>
-    <div class="step" data-step="3">
-      <p class="step-number">04 — Global</p>
-      <h2>Where SFO connects</h2>
-      <p>Asia and Europe anchor SFO's international reach. Toggle between
-      eras to watch those connections shrink during the crisis and slowly
-      rebuild through recovery.</p>
+    <div class="story-viz" id="streamgraph-container"></div>
+    <div class="story-body">
+      <p>United dominates SFO throughout, but the pandemic reshuffled the carriers below it.
+      Some airlines never returned to their pre-COVID volume. Others used the disruption
+      as an opportunity — cutting costs, renegotiating gates, and emerging with a larger
+      share of a smaller market.</p>
     </div>
-  </article>
+  </div>
 
 </section>
 

@@ -1,31 +1,54 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --cream:  #f7f6f2;
-  --ink:    #1a1a1a;
-  --muted:  #666;
-  --accent: #1D9E75;
+  --sfo-75-white: #c1eafb;
+  --sfo-50-white: #9ecbef;
+  --sfo-25-white: #5db3e6;
+  --sfo-25-black: #1773a6;  
+  --sfo-60-black: #0d3e58;
+  --sfo-20-black: #0a2a3d;  
+  --sfo-blue: #009ade;
+  --sfo-gray: #4d5156;
+  --white: #f7f6f2;
+  --black: #1a1a1a;
 }
 
 body {
-  font-family: 'Nunito', sans-serif;
-  background: var(--cream);
-  color: var(--ink);
+  font-family: 'Montserrat', sans-serif;
+  background: var(--sfo-blue);
+  color: var(--black);
   font-size: 16px;
   line-height: 1.6;
 }
 
 /* ── Hero ── */
 .hero {
-  min-height: 50vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  text-align: center;
-  padding: 4rem 2rem;
-  background: var(--ink);
-  color: #fff;
+  padding: 4rem 6rem;
+  position: relative;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+  to bottom,
+  color-mix(in srgb, var(--sfo-60-black) 60%, transparent) 0%,
+  color-mix(in srgb, var(--sfo-20-black) 70%, transparent) 50%,
+  var(--sfo-blue) 100%
+  );
+  z-index: 0;
+}
+
+/* Make sure all hero content sits above the overlay */
+.hero > * {
+  position: relative;
+  z-index: 1;
 }
 
 .hero-label {
@@ -33,45 +56,54 @@ body {
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--sfo-25-black);
+  text-align: center;
   margin-bottom: 1rem;
 }
 
 .hero h1 {
-  font-family: 'Raleway', sans-serif;
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 800;
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 500;
   line-height: 1.15;
   margin-bottom: 1rem;
+  color: var(--white);
 }
 
 .hero p {
-  font-size: 1rem;
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
   color: rgba(255,255,255,0.6);
 }
 
-.hero-tagline {
-  font-size: 1rem;
+.hero .hero-tagline {
+  font-size: clamp(1.25rem, 2.5vw, 2rem);
   color: rgba(255,255,255,0.5);
   font-style: italic;
   margin-top: 0.5rem;
 }
 
-/* ── Description ── */
 
-.description {
-  max-width: 760px;
-  margin: 3rem auto;
+/* ── Intro paragraph ── */
+.intro {
+  background-color: var(--sfo-blue);
+  margin: 5rem auto;
+  margin-top: 8rem;
   padding: 0 2rem;
+  max-width: 680px;
+  width: 100%;
 }
 
-.description p {
-  text-align: center;
-  font-size: 1rem;
-  color: var(--muted);
+.intro h3 {
+  color: var(--white);
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.intro p {
+  color: var(--white);
+  font-size: 1.2rem;
   line-height: 1.85;
 }
-
 
 /* ── Viz sections ── */
 .viz-section {
@@ -85,12 +117,12 @@ body {
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--sfo-25-black);
   margin-bottom: 0.25rem;
 }
 
 .viz-title {
-  font-family: 'Raleway', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: 0.25rem;
@@ -98,7 +130,7 @@ body {
 
 .viz-sub {
   font-size: 13px;
-  color: var(--muted);
+  color: var(--sfo-gray);
   margin-bottom: 1.25rem;
   margin-top: 0;
 }
@@ -110,87 +142,52 @@ body {
 
 /* ── D3 shared ── */
 .axis path, .axis line { stroke: #dddbd3; }
-.axis text { font-family: 'Nunito', sans-serif; font-size: 10px; fill: var(--muted); }
+.axis text { font-family: 'Montserrat', sans-serif; font-size: 10px; fill: var(--sfo-75-white); }
 
-.axisLabel { font-family: 'Nunito', sans-serif; font-size: 11px; fill: var(--muted); }
+.axisLabel { font-family: 'Montserrat', sans-serif; font-size: 11px; fill: var(--sfo-75-white); }
 
-.crisis-band { fill: #c0392b; opacity: 0.06; }
-.crisis-label { font-family: 'Nunito', sans-serif; font-size: 9px; fill: #c0392b; opacity: 0.7; }
+.crisis-band {
+  fill: #e05c4a;
+  opacity: 0.25;  
+  pointer-events: all; 
+  cursor: pointer;
+}
+
+.crisis-label {
+  fill: #ffb3a7;
+  font-size: 9px;
+  opacity: 1;
+  pointer-events: all; 
+  cursor: pointer;
+}
 
 .panel-bg { fill: #fafafa; stroke: #ddd; stroke-width: 0.8; }
-.panel-title { font-size: 12px; font-weight: 600; font-family: 'Raleway', sans-serif; }
+.panel-title { font-size: 12px; font-weight: 600; font-family: 'Montserrat', sans-serif; }
 
 .crosshair { stroke: #555; stroke-width: 1; stroke-dasharray: 4,3; }
 
-.legend-title { font-size: 13px; font-weight: bold; font-family: 'Raleway', sans-serif; fill: var(--ink); }
-.legend-label { font-size: 12px; font-family: 'Nunito', sans-serif; fill: #333; }
+.legend-title { font-size: 13px; font-weight: bold; font-family: 'Montserrat', sans-serif; fill: var(--black); }
+.legend-label { font-size: 12px; font-family: 'Montserrat', sans-serif; fill: #333; }
 
 
-/* ── Scrollytelling — Story-style spotlight layout ──────────────────────── */
+/* ── Scrollytelling — vertical story layout ──────────────────────────────── */
 #scrolly {
-  position: relative;
   display: flex;
-  flex-direction: row-reverse;
-  align-items: flex-start;
-  min-height: 100vh;
+  flex-direction: column;
 }
 
-/* Sticky chart — fills the right 65% of the screen */
-.sticky-figure {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  flex: 0 0 65%;
+.story-step {
+  background: var(--step-bg);
+  padding: 5rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 2rem 3rem;
-  align-self: flex-start;
-  background: var(--cream);
-  border-left: 1px solid var(--border, #dddbd3);
 }
 
-.sticky-figure svg {
-  max-width: 100%;
-  height: auto;
-  overflow: visible;
-}
-
-/* All panels hidden, only active shows */
-.viz-panel {
-  display: none;
+.story-header {
+  max-width: 800px;
   width: 100%;
-}
-
-.viz-panel.is-active {
-  display: block;
-}
-
-/* Step cards column — 35% left strip */
-article {
-  flex: 0 0 35%;
-  padding: 0;
-}
-
-/* ── Step cards — Story spotlight style ─────────────────────────────────── */
-.step {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 4rem 3rem;
-  opacity: 0.25;
-  transition: opacity 0.4s ease;
-  border-bottom: 1px solid var(--border, #dddbd3);
-}
-
-.step:last-child {
-  border-bottom: none;
-}
-
-.step.is-active {
-  opacity: 1;
+  margin-bottom: 2.5rem;
 }
 
 .step-number {
@@ -198,27 +195,73 @@ article {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--sfo-50-white);
   margin-bottom: 0.75rem;
 }
 
-.step h2 {
-  font-family: 'Raleway', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--ink);
-  margin-bottom: 1rem;
+.story-header h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(1rem, 4vw, 2.8rem);
+  font-weight: 600;
+  color: var(--white);
   line-height: 1.2;
 }
 
-.step p {
-  font-size: 14px;
-  color: var(--muted);
-  line-height: 1.8;
-  width: auto;
-  padding: 0;
-  margin: 0;
+.story-viz {
+  width: 100%;
+  max-width: 1000px;
+  margin-bottom: 2.5rem;
 }
+
+.story-viz svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+}
+
+.story-body {
+  max-width: 800px;
+  width: 100%;
+}
+
+.story-body p {
+  font-size: 1rem;
+  color: var(--sfo-75-white);
+  line-height: 1.85;
+  opacity: 0.85;
+}
+
+/* ── Era toggle (chord diagram) ──────────────────────────────────────────── */
+.era-toggle {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.era-btn {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.5rem 1.25rem;
+  border: 1.5px solid var(--sfo-75-white);
+  background: transparent;
+  color: var(--sfo-75-white);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.era-btn.active,
+.era-btn:hover {
+  background: var(--sfo-75-white);
+  color: var(--sfo-60-black);
+}
+
 
 /* ── Outro — Story footer style ─────────────────────────────────────────── */
 .outro {
@@ -229,12 +272,12 @@ article {
   align-items: center;
   text-align: center;
   padding: 4rem 2rem;
-  background: var(--ink);
+  background: var(--black);
   color: #fff;
 }
 
 .outro h2 {
-  font-family: 'Raleway', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: clamp(1.5rem, 4vw, 2.5rem);
   font-weight: 800;
   max-width: 620px;
@@ -247,4 +290,87 @@ article {
   color: rgba(255,255,255,0.45);
   width: auto;
   padding: 0;
+}
+
+/* ── Scroll transitions ───────────────────────────────────────────────────── */
+
+/* Base hidden state */
+.story-header,
+.story-viz,
+.story-body {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+/* Stagger each child so they appear one after another */
+.story-header { transition-delay: 0.1s; }
+.story-viz    { transition-delay: 0.35s; }
+.story-body   { transition-delay: 0.6s; }
+
+/* Visible state — added by IntersectionObserver */
+.story-header.is-visible,
+.story-viz.is-visible,
+.story-body.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Intro section fade ───────────────────────────────────────────────────── */
+.intro {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.intro.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── HEATMAP ───────────────────────────────────────────────────── */
+#step-heatmap .axisLabel {
+  fill: var(--sfo-75-white);
+}
+
+#step-heatmap .axes text,
+#step-heatmap .axes path,
+#step-heatmap .axes line {
+  fill: var(--sfo-75-white);
+  stroke: var(--sfo-75-white);
+}
+
+
+/* ── STREAMGRAPH ───────────────────────────────────────────────────── */
+#step-stream .legend-title {
+  fill: var(--sfo-75-white);
+}
+
+#step-stream .legend-label {
+  fill: var(--sfo-75-white);
+}
+
+#step-stream .axis text {
+  fill: var(--sfo-75-white);
+}
+
+#step-stream .axis path,
+#step-stream .axis line {
+  stroke: var(--sfo-75-white);
+}
+
+
+.tooltip {
+  position: absolute;
+  background: var(--sfo-20-black);
+  color: var(--sfo-75-white);
+  padding: 0.6rem 0.9rem;
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  line-height: 1.6;
+  pointer-events: none;   /* so it doesn't interfere with mouse events */
+  border: 1px solid var(--sfo-25-black);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 100;
 }

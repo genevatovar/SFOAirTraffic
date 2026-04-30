@@ -4,13 +4,14 @@
 // Y-axis: Annual enplaned passengers (stackOffsetNone — absolute volumes)
 // Series: Top 6 airlines by all-time passenger count + "Other"
 // Color scale: Qualitative (d3.schemeTableau10)
-// Tooltip: vertical crosshair via bisect
+// Interactions: hover to isolate stream, scroll-triggered left-to-right draw-in,
+//               crosshair tooltip
 
 function drawStream(data) {
   const container = document.getElementById("streamgraph-container");
   const width = container.clientWidth || 900;
   const height = Math.round(width * 0.54);
-  const margin = { top: 70, right: 180, bottom: 80, left: 60 };
+  const margin = { top: 70, right: 180, bottom: 80, left: 70 };
   const plot_width  = width  - margin.left - margin.right;
   const plot_height = height - margin.top  - margin.bottom;
 
@@ -94,9 +95,11 @@ function drawStream(data) {
     .y1(d => yScale(d[1]))
     .curve(d3.curveCatmullRom);
 
-  // Crisis bands — 9/11 and COVID
+  // Crisis bands — 9/11, recession, and COVID
+  // Drawn before streams so they sit underneath
   const crisisBands = [
     { start: 2001.5, end: 2002.5, label: "9/11" },
+    { start: 2008.5, end: 2010,   label: "Recession" },
     { start: 2020,   end: 2021.8, label: "COVID-19" }
   ];
 
@@ -115,23 +118,68 @@ function drawStream(data) {
       .text(b.label);
   });
 
+  // ── Draw streams — start clipped to x=0 for draw-in animation ────────────
+  // Clip path restricts visible area; animation expands it left to right
+  const clipId = "stream-clip";
+
+  canvas.append("defs").append("clipPath")
+    .attr("id", clipId)
+    .append("rect")
+    .attr("x", margin.left)
+    .attr("y", 0)
+    .attr("width", 0)              // starts at 0, expands on scroll
+    .attr("height", height);
+
   // DRAW STREAMS
   stackedData.forEach(layer => {
     plot.append("path")
       .datum(layer)
       .attr("class", "area-path")
+      .attr("data-key", layer.key)
       .attr("d", areaGen)
+      .attr("clip-path", `url(#${clipId})`)
       .style("fill", colorScale(layer.key))  // data-driven color, keep inline
       .style("fill-opacity", 0.85)
       .style("stroke", "white")
-      .style("stroke-width", 0.5);
+      .style("stroke-width", 0.5)
+      .style("cursor", "pointer");
   });
 
-  // TOOLTIP + CROSSHAIR
-  const tooltip = d3.select("body")
-    .append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0);
+  // ── Hover isolation — dims all streams except the hovered one ─────────────
+  function isolateStream(key) {
+    plot.selectAll(".area-path")
+      .transition().duration(200)
+      .style("fill-opacity", function() {
+        return this.getAttribute("data-key") === key ? 0.95 : 0.15;
+      });
+  }
+
+  function restoreStreams() {
+    plot.selectAll(".area-path")
+      .transition().duration(200)
+      .style("fill-opacity", 0.85);
+  }
+
+  // Add hover events to each stream path
+  // Note: overlay rect sits on top so we attach events to it, not the paths
+  // Stream paths still need mouseover/mouseout for direct hover detection
+  plot.selectAll(".area-path")
+    .on("mouseover", function() {
+      const key = this.getAttribute("data-key");
+      isolateStream(key);
+    })
+    .on("mouseout", function() {
+      restoreStreams();
+    });
+
+  // TOOLTIP — reuse existing to avoid duplicates
+  let tooltip = d3.select(".tooltip");
+  if (tooltip.empty()) {
+    tooltip = d3.select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+  }
 
   // Vertical crosshair line
   const crosshair = plot.append("line")
@@ -140,7 +188,10 @@ function drawStream(data) {
     .style("opacity", 0)
     .style("pointer-events", "none");
 
-  // Invisible overlay rect to capture mouse events
+  // Invisible overlay rect to capture mouse events for crosshair + tooltip
+  // Sits on top of everything so it receives all mouse events
+  // Note: this overlay intercepts mouseover/mouseout on stream paths beneath it,
+  // so hover isolation is also triggered from the legend instead
   plot.append("rect")
     .attr("width", plot_width)
     .attr("height", plot_height)
@@ -177,6 +228,7 @@ function drawStream(data) {
     .on("mouseleave", function() {
       crosshair.style("opacity", 0);
       tooltip.style("opacity", 0);
+      restoreStreams();
     });
 
   // AXES
@@ -209,7 +261,7 @@ function drawStream(data) {
     .attr("text-anchor", "middle")
     .text("Annual enplaned passengers");
 
-  // LEGEND
+  // LEGEND — hover isolates stream, mouseout restores all
   const legendG = canvas.append("g")
     .attr("transform", `translate(${margin.left + plot_width + 20}, ${margin.top + 20})`);
 
@@ -220,7 +272,14 @@ function drawStream(data) {
 
   keys.forEach((k, i) => {
     const row = legendG.append("g")
-      .attr("transform", `translate(0, ${20 + i * 26})`);
+      .attr("transform", `translate(0, ${20 + i * 26})`)
+      .style("cursor", "pointer")
+      .on("mouseover", function() {
+        isolateStream(k);
+      })
+      .on("mouseout", function() {
+        restoreStreams();
+      });
 
     row.append("rect")
       .attr("class", "legend-swatch")
@@ -234,6 +293,27 @@ function drawStream(data) {
       .attr("x", 24).attr("y", 12)
       .text(k.length > 18 ? k.slice(0, 18) + "…" : k);
   });
+
+  // ── Scroll-triggered left-to-right draw-in animation ─────────────────────
+  // IntersectionObserver watches the container and expands the clip rect
+  // when the section enters the viewport, making streams appear left to right
+  const streamContainer = document.querySelector("#streamgraph-container");
+
+  const drawObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        canvas.select(`#${clipId} rect`)
+          .transition()
+          .duration(2000)              // 2s draw across full width
+          .ease(d3.easeQuadInOut)
+          .attr("width", plot_width + margin.left + margin.right);
+
+        drawObserver.unobserve(streamContainer);  // only animate once
+      }
+    });
+  }, { threshold: 0.2 });
+
+  drawObserver.observe(streamContainer);
 }
 
 function loadAndDrawStream() {

@@ -49,13 +49,12 @@ function drawSmallMultiples(data) {
   });
 
   // SCALES (shared across panels for direct comparability)
-  const xExtent = d3.extent(flat, d => d.date);
-  const yMax    = d3.max(flat,  d => d.passengers);
-
+  // Force x domain to start at Jan 1999 so all data is shown from the beginning
   const xScale = d3.scaleTime()
-    .domain(xExtent)
+    .domain([new Date(1999, 0, 1), d3.max(flat, d => d.date)])
     .range([0, panelW]);
 
+  const yMax = d3.max(flat, d => d.passengers);
   const yScale = d3.scaleLinear()
     .domain([0, yMax * 1.05])
     .nice()
@@ -75,20 +74,29 @@ function drawSmallMultiples(data) {
     .defined(d => !isNaN(d.passengers))
     .curve(d3.curveMonotoneX);
 
-  // Crisis bands — 9/11 and COVID
+  // Crisis bands — same dates as heatmap for cross-view consistency
   const crisisBands = [
-    { start: new Date(2001, 8, 1), end: new Date(2002, 6, 1), label: "9/11" },
-    { start: new Date(2020, 0, 1), end: new Date(2021, 9, 1), label: "COVID-19" }
+    { start: new Date(2001, 8, 1), end: new Date(2002, 6, 1),  label: "9/11" },
+    { start: new Date(2008, 8, 1), end: new Date(2009, 5, 1),  label: "Recession" },
+    { start: new Date(2020, 0, 1), end: new Date(2021, 9, 1),  label: "COVID-19" }
   ];
 
-  // TOOLTIP
-  const tooltip = d3.select("body")
-    .append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0);
+  // TOOLTIP — reuse existing to avoid duplicates
+  let tooltip = d3.select(".tooltip");
+  if (tooltip.empty()) {
+    tooltip = d3.select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+  }
 
   const monthNames = ["Jan","Feb","Mar","Apr","May","Jun",
                       "Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  // ── Store panel refs for crosshair sync ───────────────────────────────────
+  // Each entry holds the panel's series data and its crosshair/dot elements
+  // so mousemove on either panel can update both simultaneously
+  const panelRefs = [];
 
   // DRAW PANELS — one per segment
   segments.forEach((geo, i) => {
@@ -101,6 +109,8 @@ function drawSmallMultiples(data) {
       .sort((a, b) => a.date - b.date);
 
     const panel = canvas.append("g")
+      .attr("class", "sm-panel")
+      .attr("data-geo", geo)
       .attr("transform", `translate(${tx},${ty})`);
 
     // Panel background
@@ -118,7 +128,7 @@ function drawSmallMultiples(data) {
       .attr("x1", 0).attr("x2", panelW)
       .attr("y1", d => yScale(d)).attr("y2", d => yScale(d));
 
-    // Crisis band shading
+    // Crisis band shading — drawn before line so they sit underneath
     crisisBands.forEach(b => {
       const x0 = xScale(b.start);
       const x1 = xScale(b.end);
@@ -136,7 +146,7 @@ function drawSmallMultiples(data) {
         .text(b.label);
     });
 
-    // Filled area
+    // Filled area under line
     panel.append("path")
       .datum(seriesData)
       .attr("d", areaGen)
@@ -173,30 +183,75 @@ function drawSmallMultiples(data) {
       .attr("y", -14)
       .attr("text-anchor", "middle")
       .attr("class", "panel-title")
-      .style("fill", colors[geo])  // data-driven color, keep inline
+      .style("fill", colors[geo])
       .text(geo);
 
-    // Invisible overlay for bisect tooltip
+    // ── Invisible overlay — handles hover + crosshair sync ───────────────────
+    // Sits on top of everything so it captures all mouse events
     panel.append("rect")
       .attr("width", panelW)
       .attr("height", panelH)
       .style("fill", "transparent")
+      .style("cursor", "crosshair")
       .on("mousemove", function(e) {
         const [mx] = d3.pointer(e);
         const hoverDate = xScale.invert(mx);
-        const bisect = d3.bisector(d => d.date).left;
-        const idx = bisect(seriesData, hoverDate, 1);
-        const d = seriesData[Math.min(idx, seriesData.length - 1)];
-        if (!d) return;
+        const bisector = d3.bisector(d => d.date).left;
+
+        // Sync crosshair across both panels at the same date
+        panelRefs.forEach(ref => {
+          const idx = Math.min(bisector(ref.seriesData, hoverDate, 1), ref.seriesData.length - 1);
+          const d = ref.seriesData[idx];
+          if (!d) return;
+          ref.crosshairLine
+            .attr("x1", xScale(d.date)).attr("x2", xScale(d.date))
+            .style("display", null);
+          ref.dotMarker
+            .attr("cx", xScale(d.date)).attr("cy", yScale(d.passengers))
+            .style("display", null);
+        });
+
+        // Tooltip shows both domestic + international for the hovered month
+        const domRef  = panelRefs.find(r => r.geo === "Domestic");
+        const intlRef = panelRefs.find(r => r.geo === "International");
+        const domD  = domRef.seriesData[Math.min(bisector(domRef.seriesData, hoverDate, 1), domRef.seriesData.length - 1)];
+        const intlD = intlRef.seriesData[Math.min(bisector(intlRef.seriesData, hoverDate, 1), intlRef.seriesData.length - 1)];
+        if (!domD || !intlD) return;
+
         tooltip.transition().duration(100).style("opacity", 0.9);
         tooltip
-          .html(`<strong>${geo}</strong><br/>${monthNames[d.month - 1]} ${d.year}<br/>${d3.format(",.0f")(d.passengers)} passengers`)
+          .html(`
+            <strong>${monthNames[domD.month - 1]} ${domD.year}</strong><br/>
+            <span style="color:#378ADD">▬ Domestic: ${d3.format(",.0f")(domD.passengers)}</span><br/>
+            <span style="color:#1D9E75">▬ International: ${d3.format(",.0f")(intlD.passengers)}</span>
+          `)
           .style("left", (e.pageX + 12) + "px")
           .style("top",  (e.pageY - 28) + "px");
       })
       .on("mouseout", function() {
+        // Hide crosshairs on all panels on mouse leave
+        panelRefs.forEach(ref => {
+          ref.crosshairLine.style("display", "none");
+          ref.dotMarker.style("display", "none");
+        });
         tooltip.transition().duration(200).style("opacity", 0);
       });
+
+    // ── Crosshair elements — after overlay so they render on top ──────────────
+    const crosshairLine = panel.append("line")
+      .attr("class", "crosshair")
+      .attr("y1", 0)
+      .attr("y2", panelH)
+      .style("display", "none");
+
+    const dotMarker = panel.append("circle")
+      .attr("r", 4)
+      .style("fill", colors[geo])
+      .style("stroke", "white")
+      .style("stroke-width", 1.5)
+      .style("display", "none");
+
+    panelRefs.push({ geo, seriesData, crosshairLine, dotMarker });
   });
 
   // SHARED AXIS LABELS
