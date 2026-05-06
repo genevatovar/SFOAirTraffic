@@ -1,18 +1,28 @@
 // Calendar Heat Map - SFO Scrollytelling Project
-// Interactions: row highlight, crisis zoom, animated draw-in on scroll
+// Interactions: row highlight on hover, animated draw-in on scroll
 
 function drawHeatmap(data) {
-  const cellW = 36, cellH = 18, gap = 3;
+  const cellW = 48, cellH = 22, gap = 4;
   const monthNames = ["Jan","Feb","Mar","Apr","May","Jun",
                       "Jul","Aug","Sep","Oct","Nov","Dec"];
 
-  // Crisis periods for click-to-zoom
+  // Crisis periods — shaded bands with labels only, visual reference
   const crisisPeriods = [
     { label: "9/11",      years: [2001, 2002] },
     { label: "Recession", years: [2008, 2009] },
     { label: "COVID-19",  years: [2020, 2021] },
   ];
 
+  // Annotations — key insights shown to the right of the chart
+  const annotations = [
+    { year: 2001, text: "9/11 collapses summer peak" },
+    { year: 2008, text: "Recession dips begin" },
+    { year: 2019, text: "Record high" },
+    { year: 2020, text: "COVID wipes out nearly all traffic" },
+    { year: 2022, text: "Recovery begins" },
+  ];
+
+  // Roll up to year → month totals
   const monthlyMap = d3.rollup(
     data,
     v => d3.sum(v, d => d.passenger_count),
@@ -20,9 +30,13 @@ function drawHeatmap(data) {
     d => d.month
   );
 
-  const years = Array.from(monthlyMap.keys()).sort((a, b) => a - b);
+  // Start at 2000 — 1999 data is partial
+  // Exclude 2026 — year is incomplete
+  const years = Array.from(monthlyMap.keys())
+    .filter(y => y >= 2000 && y < 2026)
+    .sort((a, b) => a - b);
 
-  const margin = { top: 40, right: 80, bottom: 80, left: 50 };
+  const margin = { top: 100, right: 240, bottom: 100, left: 60 };
   const width  = cellW * 12 + gap * 11 + margin.left + margin.right;
   const height = cellH * years.length + gap * (years.length - 1) + margin.top + margin.bottom;
   const plot_width  = width  - margin.left - margin.right;
@@ -33,50 +47,44 @@ function drawHeatmap(data) {
     .attr("width",  width)
     .attr("height", height);
 
+  // ── Title and subtitle ─────────────────────────────────────────────────────
+  canvas.append("text")
+    .attr("x", margin.left + plot_width / 2)
+    .attr("y", 28)
+    .attr("text-anchor", "middle")
+    .style("font-size", "16px")
+    .style("font-weight", "700")
+    .style("font-family", "Montserrat, sans-serif")
+    .style("fill", "var(--sfo-75-white)")
+    .text("Monthly Enplaned Passengers at SFO (2000–2025)");
+
+  canvas.append("text")
+    .attr("x", margin.left + plot_width / 2)
+    .attr("y", 50)
+    .attr("text-anchor", "middle")
+    .style("font-size", "12px")
+    .style("font-family", "Montserrat, sans-serif")
+    .style("fill", "var(--sfo-50-white)")
+    .text("Hover a row or month to highlight");
+
   const plot = canvas.append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-  // ── Color scale ────────────────────────────────────────────────────────────
+  // ── Color scale — log scale makes subtle differences more visible ──────────
   const allValues = [];
   years.forEach(y => {
     for (let m = 1; m <= 12; m++) {
       const v = (monthlyMap.get(y) || new Map()).get(m);
-      if (v) allValues.push(v);
+      if (v && v > 0) allValues.push(v);
     }
   });
 
-  const fullDomain = [0, d3.max(allValues)];
+  const minVal = d3.min(allValues);
+  const maxVal = d3.max(allValues);
 
   const scaleColor = d3.scaleSequential()
-    .domain(fullDomain)
-    .interpolator(d3.interpolateBlues);
-
-  // ── Month labels ───────────────────────────────────────────────────────────
-  monthNames.forEach((m, i) => {
-    plot.append("text")
-      .attr("x", i * (cellW + gap) + cellW / 2)
-      .attr("y", -10)
-      .attr("text-anchor", "middle")
-      .attr("class", "axisLabel")
-      .text(m);
-  });
-
-  // ── Reset button — declared early so crisis bands can reference it ─────────
-  // Must be declared before crisisPeriods.forEach so the click handlers can use it
-  const resetBtn = d3.select("#heatmap-container")
-    .append("div")
-    .style("text-align", "center")
-    .style("margin-top", "0.5rem")
-    .style("display", "none");
-
-  resetBtn.append("button")
-    .attr("class", "era-btn active")
-    .text("Reset zoom")
-    .on("click", function() {
-      scaleColor.domain(fullDomain);
-      updateCellColors();
-      resetBtn.style("display", "none");
-    });
+  .domain([0, maxVal])
+  .interpolator(d3.interpolateBlues);
 
   // ── Crisis bands — drawn before cells so they sit underneath ──────────────
   crisisPeriods.forEach(crisis => {
@@ -87,69 +95,52 @@ function drawHeatmap(data) {
 
     const minYi = Math.min(...crisisYearIndices);
     const maxYi = Math.max(...crisisYearIndices);
-    const bandY  = minYi * (cellH + gap) - gap / 2;
-    const bandH  = (maxYi - minYi + 1) * (cellH + gap);
+    const bandY = minYi * (cellH + gap) - gap / 2;
+    const bandH = (maxYi - minYi + 1) * (cellH + gap);
 
-    // Click handler shared by band and label
-    function zoomToCrisis() {
-      const crisisValues = [];
-      crisis.years.forEach(y => {
-        for (let m = 1; m <= 12; m++) {
-          const v = (monthlyMap.get(y) || new Map()).get(m);
-          if (v) crisisValues.push(v);
-        }
-      });
-      scaleColor.domain([0, d3.max(crisisValues)]);
-      updateCellColors();
-      resetBtn.style("display", "block");
-    }
-
-    // Shaded band
-    const bandRect = plot.append("rect")
+    plot.append("rect")
       .attr("class", "crisis-band")
       .attr("x", -4)
       .attr("y", bandY)
       .attr("width", plot_width + 8)
       .attr("height", bandH)
-      .attr("rx", 3)
-      .style("cursor", "pointer");
+      .attr("rx", 3);
 
-    // Use native addEventListener instead of D3 .on() for reliability
-    bandRect.node().addEventListener("click", zoomToCrisis);
-
-    // Crisis label
-    const labelEl = plot.append("text")
+    plot.append("text")
       .attr("class", "crisis-label")
       .attr("x", plot_width + 10)
       .attr("y", bandY + bandH / 2 + 4)
-      .style("font-size", "9px")
-      .style("cursor", "pointer")
+      .style("font-size", "12px")
+      .style("font-weight", "600")
+      .style("font-family", "Montserrat, sans-serif")
       .text(crisis.label);
-
-    labelEl.node().addEventListener("click", zoomToCrisis);
   });
 
-  // ── Cells + row labels ─────────────────────────────────────────────────────
-  const rowGroups = [];
+  // ── Annotation excerpts — point left toward the graph ─────────────────────
+  annotations.forEach(({ year, text }) => {
+    const yi = years.indexOf(year);
+    if (yi === -1) return;
+    const rowY = yi * (cellH + gap) + cellH / 2 + 4;
 
+    plot.append("text")
+      .attr("x", plot_width + 12)
+      .attr("y", rowY)
+      .attr("text-anchor", "start")
+      .style("font-size", "11px")
+      .style("font-family", "Montserrat, sans-serif")
+      .style("fill", "var(--sfo-50-white)")
+      .style("font-style", "italic")
+      .text(`← ${text}`);
+  });
+
+  // ── Cells ──────────────────────────────────────────────────────────────────
   years.forEach((year, yi) => {
     const rowY = yi * (cellH + gap);
-
-    const yearLabel = plot.append("text")
-      .attr("x", -8)
-      .attr("y", rowY + cellH / 2 + 4)
-      .attr("text-anchor", "end")
-      .attr("class", "axisLabel")
-      .style("cursor", "pointer")
-      .text(year);
-
-    const cells = [];
-
     for (let m = 1; m <= 12; m++) {
       const val = (monthlyMap.get(year) || new Map()).get(m) || 0;
       const x   = (m - 1) * (cellW + gap);
 
-      const rect = plot.append("rect")
+      plot.append("rect")
         .attr("class", "heatmap-tile")
         .attr("data-year", year)
         .attr("data-month", m)
@@ -161,17 +152,86 @@ function drawHeatmap(data) {
         .attr("stroke", "white")
         .attr("stroke-width", 1)
         .style("fill", val > 0 ? scaleColor(val) : "#eceae4")
-        .style("opacity", 0)           // start hidden for draw-in animation
+        .style("opacity", 0)
         .style("cursor", "pointer");
-
-      cells.push({ rect, val, m });
     }
-
-    rowGroups.push({ year, yi, rowY, cells, yearLabel });
   });
 
-  // ── Row highlight on hover ─────────────────────────────────────────────────
-  // Invisible full-row hit targets
+  // ── Highlight / restore helpers ────────────────────────────────────────────
+  function highlightYear(year) {
+    plot.selectAll(".heatmap-tile")
+      .transition().duration(150)
+      .style("opacity", function() {
+        return +this.getAttribute("data-year") === year ? 1 : 0.15;
+      });
+    plot.selectAll(".year-label")
+      .filter(function() { return +this.getAttribute("data-year") === year; })
+      .style("font-weight", "700")
+      .style("fill", "#009ade");
+  }
+
+  function highlightMonth(month) {
+    plot.selectAll(".heatmap-tile")
+      .transition().duration(150)
+      .style("opacity", function() {
+        return +this.getAttribute("data-month") === month ? 1 : 0.15;
+      });
+    plot.selectAll(".month-label")
+      .filter(function() { return +this.getAttribute("data-month") === month; })
+      .style("font-weight", "700")
+      .style("fill", "#009ade");
+  }
+
+  function restoreHighlight() {
+    plot.selectAll(".heatmap-tile")
+      .transition().duration(200)
+      .style("opacity", 1);
+    plot.selectAll(".year-label, .month-label")
+      .style("font-weight", null)
+      .style("fill", null);
+  }
+
+  // ── Month labels — with hover to highlight that column ────────────────────
+  monthNames.forEach((name, i) => {
+    const m = i + 1;
+    const x = i * (cellW + gap) + cellW / 2;
+
+    plot.append("text")
+      .attr("x", x)
+      .attr("y", -10)
+      .attr("text-anchor", "middle")
+      .attr("class", "month-label axisLabel")
+      .attr("data-month", m)
+      .style("cursor", "pointer")
+      .text(name);
+
+    // Invisible rect above each month column as hit target
+    plot.append("rect")
+      .attr("x", i * (cellW + gap))
+      .attr("y", -24)
+      .attr("width", cellW)
+      .attr("height", 20)
+      .attr("fill", "transparent")
+      .style("cursor", "pointer")
+      .on("mouseover", function() { highlightMonth(m); })
+      .on("mouseout",  function() { restoreHighlight(); });
+  });
+
+  // ── Year labels — pointer-events disabled, row rects handle hover ──────────
+  years.forEach((year, yi) => {
+    const rowY = yi * (cellH + gap);
+
+    plot.append("text")
+      .attr("x", -8)
+      .attr("y", rowY + cellH / 2 + 4)
+      .attr("text-anchor", "end")
+      .attr("class", "year-label axisLabel")
+      .attr("data-year", year)
+      .style("pointer-events", "none")
+      .text(year);
+  });
+
+  // ── Invisible full-row hit targets — covers year label area too ───────────
   years.forEach((year, yi) => {
     const rowY = yi * (cellH + gap);
 
@@ -182,46 +242,11 @@ function drawHeatmap(data) {
       .attr("height", cellH + gap)
       .attr("fill", "transparent")
       .style("cursor", "pointer")
-      .on("mouseover", function() {
-        // Dim all other rows
-        plot.selectAll(".heatmap-tile")
-          .transition().duration(150)
-          .style("opacity", 1)
-          .filter(function() {
-            return +this.getAttribute("data-year") !== year;
-          })
-          .style("opacity", 0.15);
-
-        // Bold the year label
-        plot.selectAll(".axisLabel")
-          .filter(function() { return this.textContent == year; })
-          .style("font-weight", "700")
-          .style("fill", "#009ade");
-      })
-      .on("mouseout", function() {
-        plot.selectAll(".heatmap-tile")
-          .transition().duration(200)
-          .style("opacity", 1);
-
-        plot.selectAll(".axisLabel")
-          .style("font-weight", null)
-          .style("fill", null);
-      });
+      .on("mouseover", function() { highlightYear(year); })
+      .on("mouseout",  function() { restoreHighlight(); });
   });
 
-  // ── Update cell colors after zoom or reset ─────────────────────────────────
-  function updateCellColors() {
-    plot.selectAll(".heatmap-tile")
-      .transition().duration(500)
-      .style("fill", function() {
-        const y = +this.getAttribute("data-year");
-        const m = +this.getAttribute("data-month");
-        const val = (monthlyMap.get(y) || new Map()).get(m) || 0;
-        return val > 0 ? scaleColor(val) : "#eceae4";
-      });
-  }
-
-  // ── Tooltip ────────────────────────────────────────────────────────────────
+  //  Tooltip — individual cell hover
   let tooltip = d3.select(".tooltip");
   if (tooltip.empty()) {
     tooltip = d3.select("body")
@@ -235,7 +260,6 @@ function drawHeatmap(data) {
     for (let m = 1; m <= 12; m++) {
       const val = (monthlyMap.get(year) || new Map()).get(m) || 0;
       const x   = (m - 1) * (cellW + gap);
-      if (!val) continue;
 
       plot.append("rect")
         .attr("x", x).attr("y", rowY)
@@ -243,6 +267,7 @@ function drawHeatmap(data) {
         .attr("fill", "transparent")
         .style("cursor", "pointer")
         .on("mouseover", function(e) {
+          if (!val) return;
           tooltip.transition().duration(200).style("opacity", 0.9);
           tooltip
             .html(`<strong>${monthNames[m - 1]} ${year}</strong><br/>${d3.format(",.0f")(val)} passengers`)
@@ -260,15 +285,11 @@ function drawHeatmap(data) {
     }
   });
 
-  // ── Color legend ───────────────────────────────────────────────────────────
+  // COLOR LEGEND
   const legendWidth  = 200;
   const legendHeight = 12;
   const legendX = plot_width / 2 - legendWidth / 2;
-  const legendY = plot_height + 30;
-
-  const legendScale = d3.scaleLinear()
-    .domain([0, d3.max(allValues)])
-    .range([0, legendWidth]);
+  const legendY = plot_height + 36;
 
   const legend = plot.append("g")
     .attr("transform", `translate(${legendX}, ${legendY})`);
@@ -276,48 +297,77 @@ function drawHeatmap(data) {
   const defs = canvas.append("defs");
   const gradient = defs.append("linearGradient").attr("id", "heatmap-gradient");
 
+  // Gradient goes from minVal to 3M so bar reaches full dark blue
   for (let i = 0; i <= 10; i++) {
-    const t = i / 10;
-    gradient.append("stop")
-      .attr("offset", `${t * 100}%`)
-      .attr("stop-color", scaleColor(t * d3.max(allValues)));
+  const t = i / 10;
+  gradient.append("stop")
+    .attr("offset", `${t * 100}%`)
+    .attr("stop-color", scaleColor(t * 3e6));
   }
 
+  // Gradient bar
   legend.append("rect")
-    .attr("width", legendWidth).attr("height", legendHeight)
-    .attr("rx", 2).style("fill", "url(#heatmap-gradient)");
+    .attr("width", legendWidth)
+    .attr("height", legendHeight)
+    .attr("rx", 2)
+    .style("fill", "url(#heatmap-gradient)");
 
-  legend.append("g")
-    .attr("transform", `translate(0, ${legendHeight})`)
-    .attr("class", "axes")
-    .call(d3.axisBottom(legendScale).ticks(4).tickFormat(d => (d / 1e6).toFixed(1) + "M"))
-    .selectAll("text")
-    .style("fill", "#c1eafb");
-
+  // Legend title above the bar
   legend.append("text")
-    .attr("x", legendWidth / 2).attr("y", legendHeight + 30)
-    .attr("text-anchor", "middle").attr("class", "axisLabel")
+    .attr("x", legendWidth / 2)
+    .attr("y", -6)
+    .attr("text-anchor", "middle")
+    .style("font-size", "12px")
+    .style("font-family", "Montserrat, sans-serif")
+    .style("fill", "var(--sfo-50-white)")
     .text("Passengers per month");
 
-  // ── Scroll-triggered draw-in animation ────────────────────────────────────
-  // Re-animates every time the section scrolls into view
+  // D3 axis with clean round ticks
+  const legendScale = d3.scaleLinear()
+    .domain([0, 3e6])
+    .range([0, legendWidth]);
+
+  legend.append("g")
+  .attr("transform", `translate(0, ${legendHeight})`)
+  .attr("class", "axes")
+  .call(
+    d3.axisBottom(legendScale)
+      .tickValues([0, 1e6, 2e6, 3e6])
+      .tickFormat(d => (d / 1e6).toFixed(1) + "M")
+      .tickSize(6)
+  )
+  .selectAll("text")
+  .style("fill", "#c1eafb")
+  .style("font-size", "10px");
+
+  // Hide the domain bar, keep tick lines
+  legend.select(".axes .domain").style("display", "none");
+  legend.selectAll(".axes .tick line").style("stroke", "#c1eafb");
+
+  // "Darker = more passengers" below the axis
+  legend.append("text")
+    .attr("x", legendWidth / 2)
+    .attr("y", legendHeight + 36)
+    .attr("text-anchor", "middle")
+    .style("font-size", "11px")
+    .style("font-family", "Montserrat, sans-serif")
+    .style("fill", "var(--sfo-50-white)")
+    .text("Darker = more passengers");
+
+  // ── Scroll-triggered draw-in — re-animates every scroll entry ─────────────
   const container = document.querySelector("#heatmap-container");
-  let hasAnimated = false;
 
   const drawObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        // Reset all cells to invisible before re-animating
         plot.selectAll(".heatmap-tile").style("opacity", 0);
-
-        // Animate cells in column by column (month by month)
         for (let m = 1; m <= 12; m++) {
           setTimeout(() => {
             plot.selectAll(".heatmap-tile")
               .filter(function() { return +this.getAttribute("data-month") === m; })
               .transition().duration(400)
               .style("opacity", 1);
-          }, (m - 1) * 80);   // 80ms stagger per month column
+          }, (m - 1) * 80);
         }
       }
     });
@@ -337,8 +387,7 @@ function loadAndDrawHeatmap() {
     drawHeatmap(validData);
   })
   .catch(err => {
-    console.log("data loading error");
-    console.log(err);
+    console.log("data loading error", err);
   });
 }
 

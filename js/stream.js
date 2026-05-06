@@ -1,6 +1,6 @@
 // Streamgraph - SFO Scrollytelling Project
 // Dataset: sfo_enplaned_clean.csv
-// X-axis: Year (1999–2026)
+// X-axis: Year (2000–2025)
 // Y-axis: Annual enplaned passengers (stackOffsetNone — absolute volumes)
 // Series: Top 6 airlines by all-time passenger count + "Other"
 // Color scale: Qualitative (d3.schemeTableau10)
@@ -11,7 +11,7 @@ function drawStream(data) {
   const container = document.getElementById("streamgraph-container");
   const width = container.clientWidth || 900;
   const height = Math.round(width * 0.54);
-  const margin = { top: 70, right: 180, bottom: 80, left: 70 };
+  const margin = { top: 90, right: 180, bottom: 80, left: 70 };
   const plot_width  = width  - margin.left - margin.right;
   const plot_height = height - margin.top  - margin.bottom;
 
@@ -22,6 +22,26 @@ function drawStream(data) {
 
   const plot = canvas.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  // ── Title and subtitle ─────────────────────────────────────────────────────
+  canvas.append("text")
+    .attr("x", margin.left + plot_width / 2)
+    .attr("y", 24)
+    .attr("text-anchor", "middle")
+    .style("font-size", "16px")
+    .style("font-weight", "700")
+    .style("font-family", "Montserrat, sans-serif")
+    .style("fill", "var(--sfo-75-white)")
+    .text("Annual Enplaned Passengers by Airline at SFO (2000–2025)");
+
+  canvas.append("text")
+    .attr("x", margin.left + plot_width / 2)
+    .attr("y", 46)
+    .attr("text-anchor", "middle")
+    .style("font-size", "12px")
+    .style("font-family", "Montserrat, sans-serif")
+    .style("fill", "var(--sfo-50-white)")
+    .text("Hover over the color legend to isolate an airline");
 
   // ORGANIZE DATA — annual totals per airline
   const annualAirline = d3.rollup(
@@ -41,10 +61,12 @@ function drawStream(data) {
 
   const keys = [...topAirlines, "Other"];
 
-  // All years in dataset
-  const allYears = [...new Set(data.map(d => d.year))].sort(d3.ascending);
+  // Filter to 2000–2025 — excludes partial years at either end
+  const allYears = [...new Set(data.map(d => d.year))]
+    .filter(y => y >= 2000 && y <= 2025)
+    .sort(d3.ascending);
 
-  // Wide format for d3.stack(): [{year, United: val, Alaska: val, ..., Other: val}]
+  // Wide format for d3.stack()
   const wideData = allYears.map(year => {
     const row = { year };
     let topTotal = 0;
@@ -72,9 +94,9 @@ function drawStream(data) {
 
   const stackedData = stack(wideData);
 
-  // SCALES
+  // SCALES — fixed domain 2000–2025
   const xScale = d3.scaleLinear()
-    .domain(d3.extent(allYears))
+    .domain([2000, 2025])
     .range([0, plot_width]);
 
   const yMax = d3.max(stackedData, layer => d3.max(layer, d => d[1]));
@@ -125,9 +147,9 @@ function drawStream(data) {
   canvas.append("defs").append("clipPath")
     .attr("id", clipId)
     .append("rect")
-    .attr("x", margin.left)
+    .attr("x", 0)
     .attr("y", 0)
-    .attr("width", 0)              // starts at 0, expands on scroll
+    .attr("width", 0)
     .attr("height", height);
 
   // DRAW STREAMS
@@ -138,7 +160,7 @@ function drawStream(data) {
       .attr("data-key", layer.key)
       .attr("d", areaGen)
       .attr("clip-path", `url(#${clipId})`)
-      .style("fill", colorScale(layer.key))  // data-driven color, keep inline
+      .style("fill", colorScale(layer.key))
       .style("fill-opacity", 0.85)
       .style("stroke", "white")
       .style("stroke-width", 0.5)
@@ -160,18 +182,6 @@ function drawStream(data) {
       .style("fill-opacity", 0.85);
   }
 
-  // Add hover events to each stream path
-  // Note: overlay rect sits on top so we attach events to it, not the paths
-  // Stream paths still need mouseover/mouseout for direct hover detection
-  plot.selectAll(".area-path")
-    .on("mouseover", function() {
-      const key = this.getAttribute("data-key");
-      isolateStream(key);
-    })
-    .on("mouseout", function() {
-      restoreStreams();
-    });
-
   // TOOLTIP — reuse existing to avoid duplicates
   let tooltip = d3.select(".tooltip");
   if (tooltip.empty()) {
@@ -188,10 +198,7 @@ function drawStream(data) {
     .style("opacity", 0)
     .style("pointer-events", "none");
 
-  // Invisible overlay rect to capture mouse events for crosshair + tooltip
-  // Sits on top of everything so it receives all mouse events
-  // Note: this overlay intercepts mouseover/mouseout on stream paths beneath it,
-  // so hover isolation is also triggered from the legend instead
+  // Invisible overlay rect — captures mouse for crosshair and tooltip
   plot.append("rect")
     .attr("width", plot_width)
     .attr("height", plot_height)
@@ -274,18 +281,14 @@ function drawStream(data) {
     const row = legendG.append("g")
       .attr("transform", `translate(0, ${20 + i * 26})`)
       .style("cursor", "pointer")
-      .on("mouseover", function() {
-        isolateStream(k);
-      })
-      .on("mouseout", function() {
-        restoreStreams();
-      });
+      .on("mouseover", function() { isolateStream(k); })
+      .on("mouseout",  function() { restoreStreams(); });
 
     row.append("rect")
       .attr("class", "legend-swatch")
       .attr("width", 16).attr("height", 16)
       .attr("rx", 2)
-      .style("fill", colorScale(k))  // data-driven color, keep inline
+      .style("fill", colorScale(k))
       .style("fill-opacity", 0.85);
 
     row.append("text")
@@ -295,8 +298,7 @@ function drawStream(data) {
   });
 
   // ── Scroll-triggered left-to-right draw-in animation ─────────────────────
-  // IntersectionObserver watches the container and expands the clip rect
-  // when the section enters the viewport, making streams appear left to right
+  // IntersectionObserver expands clip rect when section enters viewport
   const streamContainer = document.querySelector("#streamgraph-container");
 
   const drawObserver = new IntersectionObserver((entries) => {
@@ -304,7 +306,7 @@ function drawStream(data) {
       if (entry.isIntersecting) {
         canvas.select(`#${clipId} rect`)
           .transition()
-          .duration(2000)              // 2s draw across full width
+          .duration(2000)
           .ease(d3.easeQuadInOut)
           .attr("width", plot_width + margin.left + margin.right);
 
@@ -329,8 +331,7 @@ function loadAndDrawStream() {
     drawStream(validData);
   })
   .catch(err => {
-    console.log("data loading error");
-    console.log(err);
+    console.log("data loading error", err);
   });
 }
 

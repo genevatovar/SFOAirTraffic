@@ -1,20 +1,22 @@
 // Small Multiples of Lines - SFO Scrollytelling Project
 // Dataset: sfo_enplaned_clean.csv
 // Layout: 1 column × 2 rows (2 panels)
-// X-axis: Date (monthly, 1999–2026, shared domain)
+// X-axis: Date (monthly, 2000–2025, shared domain)
 // Y-axis: Passenger count (shared domain across both panels for direct comparison)
 // Panels: Domestic and International
 // Color scale: qualitative (blue for Domestic, teal for International)
+// Annotations: pinned to top of panel with dashed vertical lines to avoid overlap
 
 function drawSmallMultiples(data) {
   const COLS = 1, ROWS = 2;
 
-  const cellW = 680, cellH = 220;
-  const cellMargin = { top: 36, right: 24, bottom: 44, left: 70 };
+  // Larger panels for better readability
+  const cellW = 860, cellH = 280;
+  const cellMargin = { top: 50, right: 40, bottom: 50, left: 80 };
   const panelW = cellW - cellMargin.left - cellMargin.right;
   const panelH = cellH - cellMargin.top  - cellMargin.bottom;
 
-  const outerMargin = { top: 72, right: 20, bottom: 50, left: 20 };
+  const outerMargin = { top: 90, right: 40, bottom: 60, left: 40 };
   const svgW = COLS * cellW + outerMargin.left + outerMargin.right;
   const svgH = ROWS * cellH + outerMargin.top  + outerMargin.bottom;
 
@@ -23,6 +25,26 @@ function drawSmallMultiples(data) {
     .append("svg")
     .attr("width",  svgW)
     .attr("height", svgH);
+
+  // TITLE AND SUBTITLE
+  canvas.append("text")
+    .attr("x", outerMargin.left + panelW / 2 + cellMargin.left)
+    .attr("y", 28)
+    .attr("text-anchor", "middle")
+    .style("font-size", "16px")
+    .style("font-weight", "700")
+    .style("font-family", "Montserrat, sans-serif")
+    .style("fill", "var(--sfo-75-white)")
+    .text("Monthly Passengers at SFO: Domestic vs. International (2000–2025)");
+
+  canvas.append("text")
+    .attr("x", outerMargin.left + panelW / 2 + cellMargin.left)
+    .attr("y", 50)
+    .attr("text-anchor", "middle")
+    .style("font-size", "12px")
+    .style("font-family", "Montserrat, sans-serif")
+    .style("fill", "var(--sfo-50-white)")
+    .text("Hover over either panel to compare domestic and international traffic for the same month");
 
   // ORGANIZE DATA — monthly totals per geo_summary
   const segments = ["Domestic", "International"];
@@ -48,10 +70,9 @@ function drawSmallMultiples(data) {
     });
   });
 
-  // SCALES (shared across panels for direct comparability)
-  // Force x domain to start at Jan 1999 so all data is shown from the beginning
+  // SCALES — fixed domain 2000–2025, shared across panels
   const xScale = d3.scaleTime()
-    .domain([new Date(1999, 0, 1), d3.max(flat, d => d.date)])
+    .domain([new Date(2000, 0, 1), new Date(2025, 11, 1)])
     .range([0, panelW]);
 
   const yMax = d3.max(flat, d => d.passengers);
@@ -76,9 +97,9 @@ function drawSmallMultiples(data) {
 
   // Crisis bands — same dates as heatmap for cross-view consistency
   const crisisBands = [
-    { start: new Date(2001, 8, 1), end: new Date(2002, 6, 1),  label: "9/11" },
-    { start: new Date(2008, 8, 1), end: new Date(2009, 5, 1),  label: "Recession" },
-    { start: new Date(2020, 0, 1), end: new Date(2021, 9, 1),  label: "COVID-19" }
+    { start: new Date(2001, 8, 1), end: new Date(2002, 6, 1), label: "9/11" },
+    { start: new Date(2008, 8, 1), end: new Date(2009, 5, 1), label: "Recession" },
+    { start: new Date(2020, 0, 1), end: new Date(2021, 9, 1), label: "COVID-19" }
   ];
 
   // TOOLTIP — reuse existing to avoid duplicates
@@ -93,9 +114,7 @@ function drawSmallMultiples(data) {
   const monthNames = ["Jan","Feb","Mar","Apr","May","Jun",
                       "Jul","Aug","Sep","Oct","Nov","Dec"];
 
-  // ── Store panel refs for crosshair sync ───────────────────────────────────
-  // Each entry holds the panel's series data and its crosshair/dot elements
-  // so mousemove on either panel can update both simultaneously
+  // Store panel refs for crosshair sync
   const panelRefs = [];
 
   // DRAW PANELS — one per segment
@@ -105,7 +124,8 @@ function drawSmallMultiples(data) {
     const tx  = outerMargin.left + col * cellW + cellMargin.left;
     const ty  = outerMargin.top  + row * cellH  + cellMargin.top;
 
-    const seriesData = flat.filter(d => d.geo === geo)
+    const seriesData = flat
+      .filter(d => d.geo === geo && d.year >= 2000 && d.year <= 2025)
       .sort((a, b) => a.date - b.date);
 
     const panel = canvas.append("g")
@@ -141,7 +161,7 @@ function drawSmallMultiples(data) {
       panel.append("text")
         .attr("class", "crisis-label")
         .attr("x", (x0 + x1) / 2)
-        .attr("y", -4)
+        .attr("y", -6)
         .attr("text-anchor", "middle")
         .text(b.label);
     });
@@ -166,7 +186,7 @@ function drawSmallMultiples(data) {
     panel.append("g")
       .attr("class", "axis x-axis")
       .attr("transform", `translate(0,${panelH})`)
-      .call(d3.axisBottom(xScale).ticks(8).tickFormat(d3.timeFormat("%Y")));
+      .call(d3.axisBottom(xScale).ticks(10).tickFormat(d3.timeFormat("%Y")));
 
     // Y axis
     panel.append("g")
@@ -177,16 +197,18 @@ function drawSmallMultiples(data) {
           .tickFormat(d => d >= 1e6 ? (d / 1e6).toFixed(1) + "M" : (d / 1e3).toFixed(0) + "K")
       );
 
-    // Panel title (segment name, colored)
+    // Panel title
     panel.append("text")
       .attr("x", panelW / 2)
-      .attr("y", -14)
+      .attr("y", -20)
       .attr("text-anchor", "middle")
       .attr("class", "panel-title")
+      .style("font-size", "13px")
+      .style("font-weight", "700")
       .style("fill", colors[geo])
       .text(geo);
 
-    // ── Invisible overlay — handles hover + crosshair sync ───────────────────
+    // Invisible overlay — handles hover + crosshair sync
     // Sits on top of everything so it captures all mouse events
     panel.append("rect")
       .attr("width", panelW)
@@ -237,7 +259,7 @@ function drawSmallMultiples(data) {
         tooltip.transition().duration(200).style("opacity", 0);
       });
 
-    // ── Crosshair elements — after overlay so they render on top ──────────────
+    // Crosshair elements — appended after overlay so they render on top
     const crosshairLine = panel.append("line")
       .attr("class", "crosshair")
       .attr("y1", 0)
@@ -255,13 +277,13 @@ function drawSmallMultiples(data) {
   });
 
   // SHARED AXIS LABELS
-  const panelAreaCenterX = outerMargin.left + (COLS * cellW) / 2;
+  const panelAreaCenterX = outerMargin.left + cellMargin.left + panelW / 2;
   const panelAreaCenterY = outerMargin.top  + (ROWS * cellH) / 2;
 
   canvas.append("text")
     .attr("class", "axisLabel")
     .attr("x", panelAreaCenterX)
-    .attr("y", outerMargin.top + ROWS * cellH + 32)
+    .attr("y", outerMargin.top + ROWS * cellH + 42)
     .attr("text-anchor", "middle")
     .text("Year");
 
@@ -269,7 +291,7 @@ function drawSmallMultiples(data) {
     .attr("class", "axisLabel")
     .attr("transform", "rotate(-90)")
     .attr("x", -panelAreaCenterY)
-    .attr("y", 14)
+    .attr("y", 18)
     .attr("text-anchor", "middle")
     .text("Passengers per month");
 }
@@ -288,8 +310,7 @@ function loadAndDrawSmallMultiples() {
     drawSmallMultiples(validData);
   })
   .catch(err => {
-    console.log("data loading error");
-    console.log(err);
+    console.log("data loading error", err);
   });
 }
 

@@ -78,7 +78,6 @@ body {
 .hero .hero-tagline {
   font-size: clamp(1.25rem, 2.5vw, 2rem);
   color: rgba(255,255,255,0.5);
-  font-style: italic;
   margin-top: 0.5rem;
 }
 
@@ -359,6 +358,10 @@ body {
   stroke: var(--sfo-75-white);
 }
 
+
+#step-pie .story-viz {
+  max-width: 1400px;
+}
 
 .tooltip {
   position: absolute;

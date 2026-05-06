@@ -4,13 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SFO Through Crisis: A Passenger Story</title>
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/scrollama/3.2.0/scrollama.min.js"></script>
+  <style>
+</style>
 </head>
 <body>
 
@@ -22,9 +23,9 @@
   background-repeat: no-repeat;
   background-position: center top;
   ">
-  <p class="hero-label">CS 360 · Data Visualizations · Geneva Tovar</p>
+  <p class="hero-label">CS 360 · Data Visualizations</p>
   <h1>SFO Through Crisis:<br>A Passenger Story</h1>
-  <p class="hero-tagline">When the world stops moving, airports feel it first.</p>
+  <p class="hero-tagline">Geneva Tovar</p>
 </section>
 
 
@@ -52,30 +53,38 @@
     </div>
     <div class="story-viz" id="heatmap-container"></div>
     <div class="story-body">
-      <p>Each cell is one month at SFO. The darker the cell, the more passengers flew that month.
-      Summer peaks repeat like clockwork every year until COVID-19 nearly wipes out an entire
-      row in 2020. No single event before it came close to the same scale of disruption.</p>
+      <p>Each cell is one month at SFO — darker means more passengers. Summer peaks repeat 
+        like clockwork every year, with July and August consistently the busiest months 
+        across all 25 years. When disruptions hit, the pattern breaks. 9/11 caused a sharp 
+        but brief dip in 2001, with traffic recovering within two years. The 2008 recession 
+        shows a slower fade — cells gradually lighten across 2008 to 2010 before rebuilding. 
+        COVID-19 is in a category of its own: nearly the entire 2020 row goes white, 
+        representing a near-total collapse of air travel that no prior event came close to 
+        matching. Recovery is visible through 2022 to 2024, but the rows haven't yet reached the deep blues of 2018 and 2019.</p>
     </div>
   </div>
 
-  <div class="story-step" id="step-chord" style="--step-bg: var(--sfo-25-black); --step-accent: var(--sfo-75-white);"> 
+  <div class="story-step" id="step-pie" style="--step-bg: var(--sfo-25-black); --step-accent: var(--sfo-75-white);"> 
     <div class="story-header">
       <p class="step-number">02 — Global</p>
       <h2>Where SFO Connects</h2>
     </div>
-    <div class="story-viz" id="chord-container">
-      <div class="era-toggle">
-        <button class="era-btn active" onclick="setEra('pre_recession', this)">Pre-Recession (1999–2007)</button>
-        <button class="era-btn" onclick="setEra('recession', this)">Recession (2008–2010)</button>
-        <button class="era-btn" onclick="setEra('post_recession', this)">Pre-COVID Peak (2011–2019)</button>
-        <button class="era-btn" onclick="setEra('covid', this)">COVID Crisis (2020–2021)</button>
-        <button class="era-btn" onclick="setEra('recovery', this)">Recovery (2022–2026)</button>
-      </div>
-    </div>
+    <div class="story-viz" id="pie-container"></div>
     <div class="story-body">
-      <p>Asia and Europe anchor SFO's international reach. Toggle between eras to watch
-      those connections shrink during the crisis and slowly rebuild through recovery.
-      Some routes that existed before 2020 have not returned at all.</p>
+      <p>Asia and Europe have anchored SFO's international reach for over two decades,
+        together accounting for the majority of outbound international passengers in every
+        era. The pre-9/11 snapshot from 2000 to 2001 shows what a stable baseline looked
+        like, with Asia already the dominant share reflecting the Bay Area's Pacific Rim
+        ties. The post-9/11 years from 2002 to 2007 show a modest but visible contraction,
+        particularly on long-haul international routes, before traffic rebuilt heading into
+        the late 2000s. The recession years show another contraction across all regions,
+        though carriers pulled back capacity rather than abandoning routes entirely. The
+        pre-COVID peak from 2011 to 2019 saw Asia's share grow even further as routes to
+        China, Japan, and South Korea expanded. COVID tells a different story. International
+        travel collapsed across every region, with Middle East and Central America routes
+        nearly disappearing entirely. Recovery has been uneven. Asia has rebuilt but has not
+        returned to 2019 levels. Some smaller regional routes that existed before 2020 have
+        not come back at all.</p>
     </div>
   </div>
 
@@ -86,10 +95,22 @@
     </div>
     <div class="story-viz" id="smallmultiples-container"></div>
     <div class="story-body">
-      <p>Domestic routes bounced back faster. International traffic lagged significantly —
-      travel bans, closed borders, and reduced demand kept those routes suppressed well
-      into 2022. The gap between the two tells a story of uneven recovery across two
-      very different passenger markets.</p>
+      <p><p>The jagged shape of both lines reflects real seasonality: summer months peak
+        every year as vacation travel surges, then dip in winter. That rhythm held
+        consistently from 2000 through 2019 across both domestic and international routes.
+        When disruptions hit, the two segments responded very differently. After 9/11,
+        domestic traffic recovered within about a year. International routes took longer,
+        weighed down by ongoing security concerns and reduced international demand. The
+        2008 recession shows a gentler but sustained dip in both panels, with international
+        traffic slightly more affected as discretionary long-haul travel dropped first.
+        COVID-19 is the exception that makes every other disruption look minor. Both lines
+        collapse in early 2020, but the recovery tells the real story. Domestic travel began
+        climbing again by mid-2021, driven by pent-up demand and the reopening of domestic
+        routes. International traffic stayed flat well into 2022, held back by travel bans,
+        closed borders, and reduced airline capacity on long-haul routes. By 2023 and 2024
+        both lines are trending upward, but international passenger counts have still not
+        returned to the record highs seen in 2018 and 2019, making clear that the two
+        markets are recovering at fundamentally different rates.</p></p>
     </div>
   </div>
 
@@ -100,10 +121,23 @@
     </div>
     <div class="story-viz" id="streamgraph-container"></div>
     <div class="story-body">
-      <p>United dominates SFO throughout, but the pandemic reshuffled the carriers below it.
-      Some airlines never returned to their pre-COVID volume. Others used the disruption
-      as an opportunity — cutting costs, renegotiating gates, and emerging with a larger
-      share of a smaller market.</p>
+      <p><p>United Airlines has dominated SFO for the entire 25-year period, consistently
+        accounting for the largest share of enplaned passengers. Its position reflects
+        SFO's role as a United hub, which gives it structural advantages that other
+        carriers cannot easily replicate. Below United, the landscape has shifted
+        considerably. After 9/11, several smaller carriers pulled back capacity at SFO
+        and never fully returned, leaving more room for the airlines that stayed.
+        The 2008 recession caused a broad contraction across all carriers, but the
+        relative order held. COVID-19 was a different kind of disruption entirely.
+        The total volume collapsed in 2020, and when recovery began, not all airlines
+        came back at the same rate. Alaska Airlines maintained a relatively strong
+        presence throughout recovery, while some international carriers that had
+        operated niche routes out of SFO reduced or eliminated their footprint. The
+        "Other" category, which captures all airlines outside the top six, shrank
+        noticeably after COVID, suggesting that smaller carriers exited or reduced
+        SFO operations more than the major carriers did. By 2024 the total volume
+        is approaching pre-COVID levels, but the composition of airlines flying
+        out of SFO looks meaningfully different than it did in 2019.</p></p>
     </div>
   </div>
 
@@ -111,15 +145,15 @@
 
 <!-- ── Outro ──────────────────────────────────────────────────────────────── -->
 <section class="outro">
-  <h2>25 years of taking off —<br>and coming back.</h2>
-  <p>Data: Air Traffic Passenger Statistics · SF Airport Commission via DataSF</p>
+  <h2>25 years of taking off <br>and coming back.</h2>
+  <p>© Geneva Tovar 2026 · Data: Air Traffic Passenger Statistics · SF Airport Commission via DataSF</p>
 </section>
 
 <!-- Chart scripts -->
 <script src="js/heatmap.js"></script>
 <script src="js/smallmultiples.js"></script>
 <script src="js/stream.js"></script>
-<script src="js/chord.js"></script>
+<script src="js/piecharts.js"></script>
 <script src="js/scrollama.js"></script>
 
 </body>

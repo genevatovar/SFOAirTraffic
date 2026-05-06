@@ -5,7 +5,7 @@ const panels = [
   "heatmap-container",
   "smallmultiples-container",
   "streamgraph-container",
-  "chord-container"
+  "pie-container"
 ];
 
 // Show only the panel matching the current step
