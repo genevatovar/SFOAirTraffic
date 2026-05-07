@@ -10,8 +10,14 @@
 function drawStream(data) {
   const container = document.getElementById("streamgraph-container");
   const width = container.clientWidth || 900;
-  const height = Math.round(width * 0.54);
-  const margin = { top: 90, right: 180, bottom: 80, left: 70 };
+  const isMobile = width < 500;
+  const height = Math.round(width * (isMobile ? 0.75 : 0.54));
+  const margin = {
+    top:    isMobile ? 70  : 90,
+    right:  isMobile ? 10  : 180,
+    bottom: isMobile ? 50  : 80,
+    left:   isMobile ? 48  : 70
+  };
   const plot_width  = width  - margin.left - margin.right;
   const plot_height = height - margin.top  - margin.bottom;
 
@@ -26,9 +32,9 @@ function drawStream(data) {
   // ── Title and subtitle ─────────────────────────────────────────────────────
   canvas.append("text")
     .attr("x", margin.left + plot_width / 2)
-    .attr("y", 24)
+    .attr("y", isMobile ? 18 : 24)
     .attr("text-anchor", "middle")
-    .style("font-size", "16px")
+    .style("font-size", isMobile ? "12px" : "16px")
     .style("font-weight", "700")
     .style("font-family", "Montserrat, sans-serif")
     .style("fill", "var(--sfo-75-white)")
@@ -36,12 +42,12 @@ function drawStream(data) {
 
   canvas.append("text")
     .attr("x", margin.left + plot_width / 2)
-    .attr("y", 46)
+    .attr("y", isMobile ? 34 : 46)
     .attr("text-anchor", "middle")
-    .style("font-size", "12px")
+    .style("font-size", isMobile ? "10px" : "12px")
     .style("font-family", "Montserrat, sans-serif")
     .style("fill", "var(--sfo-50-white)")
-    .text("Hover over the color legend to isolate an airline");
+    .text(isMobile ? "Tap legend to isolate airline" : "Hover over the color legend to isolate an airline");
 
   // ORGANIZE DATA — annual totals per airline
   const annualAirline = d3.rollup(
@@ -137,6 +143,7 @@ function drawStream(data) {
       .attr("x", (xScale(b.start) + xScale(b.end)) / 2)
       .attr("y", -4)
       .attr("text-anchor", "middle")
+      .style("font-size", isMobile ? "8px" : "9px")
       .text(b.label);
   });
 
@@ -204,8 +211,10 @@ function drawStream(data) {
     .attr("height", plot_height)
     .style("fill", "none")
     .style("pointer-events", "all")
-    .on("mousemove", function(e) {
-      const [mx] = d3.pointer(e);
+    .on("mousemove touchmove", function(e) {
+      const eventX = e.touches ? e.touches[0].clientX : e.clientX;
+      const rect   = this.getBoundingClientRect();
+      const mx     = eventX - rect.left;
       const year = Math.round(xScale.invert(mx));
 
       // Snap to nearest actual year in data
@@ -227,12 +236,15 @@ function drawStream(data) {
         return `<span style="color:${color}; font-weight:600">${airline}</span>: ${d3.format(",.0f")(val)}`;
       }).join("<br/>");
 
+      const px = e.touches ? e.touches[0].pageX : e.pageX;
+      const py = e.touches ? e.touches[0].pageY : e.pageY;
+
       tooltip.style("opacity", 0.95)
         .html(`<strong>${nearestYear}</strong><br/>${rows}`)
-        .style("left", (e.pageX + 14) + "px")
-        .style("top",  (e.pageY - 36) + "px");
+        .style("left", (px + 14) + "px")
+        .style("top",  (py - 36) + "px");
     })
-    .on("mouseleave", function() {
+    .on("mouseleave touchend", function() {
       crosshair.style("opacity", 0);
       tooltip.style("opacity", 0);
       restoreStreams();
@@ -242,60 +254,100 @@ function drawStream(data) {
   plot.append("g")
     .attr("class", "axis x-axis")
     .attr("transform", `translate(0,${plot_height})`)
-    .call(d3.axisBottom(xScale).ticks(10).tickFormat(d3.format("d")));
+    .call(d3.axisBottom(xScale).ticks(isMobile ? 6 : 10).tickFormat(d3.format("d")));
 
   plot.append("g")
     .attr("class", "axis y-axis")
     .call(
       d3.axisLeft(yScale)
-        .ticks(6)
+        .ticks(isMobile ? 4 : 6)
         .tickFormat(d => d >= 1e6 ? (d / 1e6).toFixed(0) + "M" : "")
     );
 
   // AXIS LABELS
-  plot.append("text")
-    .attr("class", "axisLabel")
-    .attr("x", plot_width / 2)
-    .attr("y", plot_height + 55)
-    .attr("text-anchor", "middle")
-    .text("Year");
+  if (!isMobile) {
+    plot.append("text")
+      .attr("class", "axisLabel")
+      .attr("x", plot_width / 2)
+      .attr("y", plot_height + 55)
+      .attr("text-anchor", "middle")
+      .text("Year");
 
-  plot.append("text")
-    .attr("class", "axisLabel")
-    .attr("transform", "rotate(-90)")
-    .attr("x", -plot_height / 2)
-    .attr("y", -60)
-    .attr("text-anchor", "middle")
-    .text("Annual enplaned passengers");
+    plot.append("text")
+      .attr("class", "axisLabel")
+      .attr("transform", "rotate(-90)")
+      .attr("x", -plot_height / 2)
+      .attr("y", -60)
+      .attr("text-anchor", "middle")
+      .text("Annual enplaned passengers");
+  }
 
   // LEGEND — hover isolates stream, mouseout restores all
-  const legendG = canvas.append("g")
-    .attr("transform", `translate(${margin.left + plot_width + 20}, ${margin.top + 20})`);
+  // On mobile: compact inline legend below the chart with tap support
+  if (isMobile) {
+    const legendSvgH = keys.length * 22 + 30;
+    canvas.attr("height", height + legendSvgH);
 
-  legendG.append("text")
-    .attr("x", 0).attr("y", 0)
-    .attr("class", "legend-title")
-    .text("Airline");
+    const legendG = canvas.append("g")
+      .attr("transform", `translate(${margin.left}, ${height - 10})`);
 
-  keys.forEach((k, i) => {
-    const row = legendG.append("g")
-      .attr("transform", `translate(0, ${20 + i * 26})`)
-      .style("cursor", "pointer")
-      .on("mouseover", function() { isolateStream(k); })
-      .on("mouseout",  function() { restoreStreams(); });
+    legendG.append("text")
+      .attr("x", 0).attr("y", 14)
+      .attr("class", "legend-title")
+      .style("font-size", "11px")
+      .style("fill", "var(--sfo-75-white)")
+      .text("Airline");
 
-    row.append("rect")
-      .attr("class", "legend-swatch")
-      .attr("width", 16).attr("height", 16)
-      .attr("rx", 2)
-      .style("fill", colorScale(k))
-      .style("fill-opacity", 0.85);
+    keys.forEach((k, i) => {
+      const row = legendG.append("g")
+        .attr("transform", `translate(0, ${24 + i * 22})`)
+        .style("cursor", "pointer")
+        .on("click touchend", function() { isolateStream(k); });
 
-    row.append("text")
-      .attr("class", "legend-label")
-      .attr("x", 24).attr("y", 12)
-      .text(k.length > 18 ? k.slice(0, 18) + "…" : k);
-  });
+      row.append("rect")
+        .attr("class", "legend-swatch")
+        .attr("width", 14).attr("height", 14)
+        .attr("rx", 2)
+        .style("fill", colorScale(k))
+        .style("fill-opacity", 0.85);
+
+      row.append("text")
+        .attr("class", "legend-label")
+        .attr("x", 20).attr("y", 11)
+        .style("font-size", "11px")
+        .style("fill", "var(--sfo-75-white)")
+        .text(k.length > 22 ? k.slice(0, 22) + "…" : k);
+    });
+
+  } else {
+    const legendG = canvas.append("g")
+      .attr("transform", `translate(${margin.left + plot_width + 20}, ${margin.top + 20})`);
+
+    legendG.append("text")
+      .attr("x", 0).attr("y", 0)
+      .attr("class", "legend-title")
+      .text("Airline");
+
+    keys.forEach((k, i) => {
+      const row = legendG.append("g")
+        .attr("transform", `translate(0, ${20 + i * 26})`)
+        .style("cursor", "pointer")
+        .on("mouseover", function() { isolateStream(k); })
+        .on("mouseout",  function() { restoreStreams(); });
+
+      row.append("rect")
+        .attr("class", "legend-swatch")
+        .attr("width", 16).attr("height", 16)
+        .attr("rx", 2)
+        .style("fill", colorScale(k))
+        .style("fill-opacity", 0.85);
+
+      row.append("text")
+        .attr("class", "legend-label")
+        .attr("x", 24).attr("y", 12)
+        .text(k.length > 18 ? k.slice(0, 18) + "…" : k);
+    });
+  }
 
   // ── Scroll-triggered left-to-right draw-in animation ─────────────────────
   // IntersectionObserver expands clip rect when section enters viewport
@@ -329,6 +381,16 @@ function loadAndDrawStream() {
       d.year && d.airline && !isNaN(d.passenger_count)
     );
     drawStream(validData);
+
+    // Redraw on resize
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        d3.select("#streamgraph-container svg").remove();
+        drawStream(validData);
+      }, 250);
+    });
   })
   .catch(err => {
     console.log("data loading error", err);

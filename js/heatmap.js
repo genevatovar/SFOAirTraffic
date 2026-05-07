@@ -2,7 +2,6 @@
 // Interactions: row highlight on hover, animated draw-in on scroll
 
 function drawHeatmap(data) {
-  const cellW = 48, cellH = 22, gap = 4;
   const monthNames = ["Jan","Feb","Mar","Apr","May","Jun",
                       "Jul","Aug","Sep","Oct","Nov","Dec"];
 
@@ -36,11 +35,26 @@ function drawHeatmap(data) {
     .filter(y => y >= 2000 && y < 2026)
     .sort((a, b) => a - b);
 
-  const margin = { top: 100, right: 240, bottom: 100, left: 60 };
-  const width  = cellW * 12 + gap * 11 + margin.left + margin.right;
-  const height = cellH * years.length + gap * (years.length - 1) + margin.top + margin.bottom;
-  const plot_width  = width  - margin.left - margin.right;
-  const plot_height = height - margin.top  - margin.bottom;
+  // Responsive sizing — scale cell dimensions to container width
+  // 12 cells + 11 gaps must fit in plot_width
+  // On mobile, hide right-side annotations to save space
+  const containerEl = document.getElementById("heatmap-container");
+  const containerW  = containerEl.clientWidth || 700;
+  const isMobile    = containerW < 500;
+
+  const showAnnotations = !isMobile;
+  const rightPad  = showAnnotations ? 220 : 20;
+  const margin    = { top: 100, right: rightPad, bottom: 100, left: isMobile ? 40 : 60 };
+
+  const availableW  = containerW - margin.left - margin.right;
+  const cellW       = Math.max(14, Math.floor((availableW - 11 * 4) / 12)); // gap = 4
+  const gap         = 4;
+  const cellH       = isMobile ? 14 : 22;
+
+  const plot_width  = cellW * 12 + gap * 11;
+  const plot_height = cellH * years.length + gap * (years.length - 1);
+  const width       = plot_width  + margin.left + margin.right;
+  const height      = plot_height + margin.top  + margin.bottom;
 
   const canvas = d3.select("#heatmap-container")
     .append("svg")
@@ -52,7 +66,7 @@ function drawHeatmap(data) {
     .attr("x", margin.left + plot_width / 2)
     .attr("y", 28)
     .attr("text-anchor", "middle")
-    .style("font-size", "16px")
+    .style("font-size", isMobile ? "12px" : "16px")
     .style("font-weight", "700")
     .style("font-family", "Montserrat, sans-serif")
     .style("fill", "var(--sfo-75-white)")
@@ -62,10 +76,10 @@ function drawHeatmap(data) {
     .attr("x", margin.left + plot_width / 2)
     .attr("y", 50)
     .attr("text-anchor", "middle")
-    .style("font-size", "12px")
+    .style("font-size", isMobile ? "10px" : "12px")
     .style("font-family", "Montserrat, sans-serif")
     .style("fill", "var(--sfo-50-white)")
-    .text("Hover a row or month to highlight");
+    .text(isMobile ? "Tap a row to highlight" : "Hover a row or month to highlight");
 
   const plot = canvas.append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
@@ -108,30 +122,33 @@ function drawHeatmap(data) {
 
     plot.append("text")
       .attr("class", "crisis-label")
-      .attr("x", plot_width + 10)
-      .attr("y", bandY + bandH / 2 + 4)
-      .style("font-size", "12px")
+      // On mobile: label sits above the band; on desktop: to the right
+      .attr("x", showAnnotations ? plot_width + 10 : 4)
+      .attr("y", showAnnotations ? bandY + bandH / 2 + 4 : bandY - 3)
+      .style("font-size", showAnnotations ? "12px" : "8px")
       .style("font-weight", "600")
       .style("font-family", "Montserrat, sans-serif")
       .text(crisis.label);
   });
 
   // ── Annotation excerpts — point left toward the graph ─────────────────────
-  annotations.forEach(({ year, text }) => {
-    const yi = years.indexOf(year);
-    if (yi === -1) return;
-    const rowY = yi * (cellH + gap) + cellH / 2 + 4;
+  if (showAnnotations) {
+    annotations.forEach(({ year, text }) => {
+      const yi = years.indexOf(year);
+      if (yi === -1) return;
+      const rowY = yi * (cellH + gap) + cellH / 2 + 4;
 
-    plot.append("text")
-      .attr("x", plot_width + 12)
-      .attr("y", rowY)
-      .attr("text-anchor", "start")
-      .style("font-size", "11px")
-      .style("font-family", "Montserrat, sans-serif")
-      .style("fill", "var(--sfo-50-white)")
-      .style("font-style", "italic")
-      .text(`← ${text}`);
-  });
+      plot.append("text")
+        .attr("x", plot_width + 12)
+        .attr("y", rowY)
+        .attr("text-anchor", "start")
+        .style("font-size", "11px")
+        .style("font-family", "Montserrat, sans-serif")
+        .style("fill", "var(--sfo-50-white)")
+        .style("font-style", "italic")
+        .text(`← ${text}`);
+    });
+  }
 
   // ── Cells ──────────────────────────────────────────────────────────────────
   years.forEach((year, yi) => {
@@ -202,8 +219,9 @@ function drawHeatmap(data) {
       .attr("text-anchor", "middle")
       .attr("class", "month-label axisLabel")
       .attr("data-month", m)
+      .style("font-size", isMobile ? "9px" : "11px")
       .style("cursor", "pointer")
-      .text(name);
+      .text(isMobile ? name[0] : name); // single initial on mobile
 
     // Invisible rect above each month column as hit target
     plot.append("rect")
@@ -227,8 +245,9 @@ function drawHeatmap(data) {
       .attr("text-anchor", "end")
       .attr("class", "year-label axisLabel")
       .attr("data-year", year)
+      .style("font-size", isMobile ? "8px" : "11px")
       .style("pointer-events", "none")
-      .text(year);
+      .text(isMobile && yi % 2 !== 0 ? "" : year); // every-other year on mobile
   });
 
   // ── Invisible full-row hit targets — covers year label area too ───────────
@@ -286,7 +305,7 @@ function drawHeatmap(data) {
   });
 
   // COLOR LEGEND
-  const legendWidth  = 200;
+  const legendWidth  = Math.min(200, plot_width * 0.6);
   const legendHeight = 12;
   const legendX = plot_width / 2 - legendWidth / 2;
   const legendY = plot_height + 36;
@@ -317,7 +336,7 @@ function drawHeatmap(data) {
     .attr("x", legendWidth / 2)
     .attr("y", -6)
     .attr("text-anchor", "middle")
-    .style("font-size", "12px")
+    .style("font-size", isMobile ? "10px" : "12px")
     .style("font-family", "Montserrat, sans-serif")
     .style("fill", "var(--sfo-50-white)")
     .text("Passengers per month");
@@ -338,7 +357,7 @@ function drawHeatmap(data) {
   )
   .selectAll("text")
   .style("fill", "#c1eafb")
-  .style("font-size", "10px");
+  .style("font-size", isMobile ? "9px" : "10px");
 
   // Hide the domain bar, keep tick lines
   legend.select(".axes .domain").style("display", "none");
@@ -349,7 +368,7 @@ function drawHeatmap(data) {
     .attr("x", legendWidth / 2)
     .attr("y", legendHeight + 36)
     .attr("text-anchor", "middle")
-    .style("font-size", "11px")
+    .style("font-size", isMobile ? "10px" : "11px")
     .style("font-family", "Montserrat, sans-serif")
     .style("fill", "var(--sfo-50-white)")
     .text("Darker = more passengers");
@@ -385,6 +404,16 @@ function loadAndDrawHeatmap() {
   .then(function(data) {
     const validData = data.filter(d => d.year && d.month && !isNaN(d.passenger_count));
     drawHeatmap(validData);
+
+    // Redraw on resize
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        d3.select("#heatmap-container svg").remove();
+        drawHeatmap(validData);
+      }, 250);
+    });
   })
   .catch(err => {
     console.log("data loading error", err);

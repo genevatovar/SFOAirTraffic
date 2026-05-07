@@ -67,19 +67,23 @@ function drawSmallMultiplesPie(eraData, eras) {
 
   const eraKeys = Object.keys(eras);
 
-  // Layout — 3 top row, 2 bottom row, legend on the right
-  const pieR      = 100;         // radius of each pie
-  const labelH    = 50;          // space above each pie for era label
-  const padX      = 50;          // horizontal padding between pies
-  const padY      = 80;          // vertical padding between rows
-  const legendW   = 180;         // legend column on the right
-  const cols      = 3;           // pies per row
-  const rows      = 2;           // number of rows
-  const chartAreaW = cols * (pieR * 2 + padX) + padX;
-  const svgW      = chartAreaW + legendW;
-  const svgH      = rows * (pieR * 2 + labelH) + padY + 60;
+  // Layout — responsive: 2 columns on mobile, 3 on desktop; legend below on mobile
+  const containerEl = document.getElementById("pie-container");
+  const containerW  = containerEl.clientWidth || 900;
+  const isMobile    = containerW < 560;
 
-  // TOOLTIP 
+  const cols      = isMobile ? 2 : 3;
+  const rows      = Math.ceil(eraKeys.length / cols);
+  const pieR      = isMobile ? Math.floor((containerW / cols) * 0.38) : 100;
+  const labelH    = isMobile ? 36  : 50;
+  const padX      = isMobile ? 8   : 50;
+  const padY      = isMobile ? 32  : 80;
+  const legendW   = isMobile ? 0   : 180;  // legend moves below on mobile
+  const chartAreaW = cols * (pieR * 2 + padX) + padX;
+  const svgW      = Math.min(containerW, chartAreaW + legendW);
+  const svgH      = rows * (pieR * 2 + labelH) + padY + (isMobile ? 200 : 60);
+
+  // TOOLTIP
   let tooltip = d3.select(".tooltip");
   if (tooltip.empty()) {
     tooltip = d3.select("body")
@@ -95,23 +99,25 @@ function drawSmallMultiplesPie(eraData, eras) {
 
   // TITLE
   canvas.append("text")
-    .attr("x", chartAreaW / 2)
-    .attr("y", 24)
+    .attr("x", isMobile ? svgW / 2 : chartAreaW / 2)
+    .attr("y", isMobile ? 18 : 24)
     .attr("text-anchor", "middle")
-    .style("font-size", "15px")
+    .style("font-size", isMobile ? "12px" : "15px")
     .style("font-weight", "bold")
     .style("font-family", "Montserrat, sans-serif")
     .style("fill", "var(--sfo-75-white)")
     .text("SFO International Passengers by Destination Region");
 
   canvas.append("text")
-    .attr("x", chartAreaW / 2)
-    .attr("y", 42)
+    .attr("x", isMobile ? svgW / 2 : chartAreaW / 2)
+    .attr("y", isMobile ? 34 : 42)
     .attr("text-anchor", "middle")
-    .style("font-size", "11px")
+    .style("font-size", isMobile ? "10px" : "11px")
     .style("font-family", "Montserrat, sans-serif")
     .style("fill", "var(--sfo-50-white)")
-    .text("Hover a slice or legend item to see how that region shifted across eras");
+    .text(isMobile
+      ? "Tap a slice to highlight region"
+      : "Hover a slice or legend item to see how that region shifted across eras");
 
   // PIE GENERATOR
   const pieGen = d3.pie()
@@ -124,7 +130,7 @@ function drawSmallMultiplesPie(eraData, eras) {
 
   const arcHover = d3.arc()
     .innerRadius(pieR * 0.35)
-    .outerRadius(pieR + 12);
+    .outerRadius(pieR + (isMobile ? 7 : 12));
 
   // Highlight all slices of a region across all pies
   function highlightRegion(region) {
@@ -159,18 +165,20 @@ function drawSmallMultiplesPie(eraData, eras) {
       });
   }
 
-  // DRAW ONE PIE PER ERA — 3 top, 2 bottom, centered
+  // DRAW ONE PIE PER ERA
+  const titleOffsetY = isMobile ? 44 : 60;
+
   eraKeys.forEach((eraKey, i) => {
     const rowIdx = Math.floor(i / cols);
     const colIdx = i % cols;
 
-    // Center the bottom row (2 pies) by offsetting it
-    const itemsInThisRow = 3;
+    // Center any partial last row
+    const itemsInThisRow = Math.min(cols, eraKeys.length - rowIdx * cols);
     const rowTotalW = itemsInThisRow * (pieR * 2 + padX) - padX;
     const rowStartX = (chartAreaW - rowTotalW) / 2;
 
     const cx = rowStartX + colIdx * (pieR * 2 + padX) + pieR;
-    const cy = 60 + labelH + rowIdx * (pieR * 2 + labelH + padY) + pieR;
+    const cy = titleOffsetY + labelH + rowIdx * (pieR * 2 + labelH + padY) + pieR;
 
     const rowData  = eraData[eraKey];
     const arcs     = pieGen(rowData);
@@ -184,18 +192,18 @@ function drawSmallMultiplesPie(eraData, eras) {
     const labelLines = eras[eraKey].label.split("\n");
 
     g.append("text")
-      .attr("y", -pieR - 26)
+      .attr("y", -pieR - (isMobile ? 18 : 26))
       .attr("text-anchor", "middle")
-      .style("font-size", "13px")
+      .style("font-size", isMobile ? "11px" : "13px")
       .style("font-weight", "700")
       .style("font-family", "Montserrat, sans-serif")
       .style("fill", "var(--sfo-75-white)")
       .text(labelLines[0]);
 
     g.append("text")
-      .attr("y", -pieR - 12)
+      .attr("y", -pieR - (isMobile ? 6 : 12))
       .attr("text-anchor", "middle")
-      .style("font-size", "11px")
+      .style("font-size", isMobile ? "9px" : "11px")
       .style("font-family", "Montserrat, sans-serif")
       .style("fill", "var(--sfo-50-white)")
       .text(labelLines[1]);
@@ -213,7 +221,7 @@ function drawSmallMultiplesPie(eraData, eras) {
         .style("fill", color)
         .style("fill-opacity", 0)
         .style("stroke", "white")
-        .style("stroke-width", 0.8)
+        .style("stroke-width", isMobile ? 0.5 : 0.8)
         .style("cursor", "pointer");
 
       // Staggered fade-in on load
@@ -223,17 +231,116 @@ function drawSmallMultiplesPie(eraData, eras) {
         .style("fill-opacity", 0.85);
 
       // Hover highlights this region across ALL pies
+      const showTooltip = (e) => {
+        highlightRegion(arc.data.region);
+        const px = e.touches ? e.touches[0].pageX : e.pageX;
+        const py = e.touches ? e.touches[0].pageY : e.pageY;
+        tooltip.transition().duration(200).style("opacity", 0.9);
+        tooltip
+          .html(`
+            <strong>${arc.data.region}</strong><br/>
+            ${d3.format(",.0f")(arc.data.passengers)} passengers<br/>
+            ${pct}% of era total<br/>
+            <span style="opacity:0.7;font-size:11px">${eras[eraKey].label.replace("\n", " ")}</span>
+          `)
+          .style("left", (px + 12) + "px")
+          .style("top",  (py - 28) + "px");
+      };
+
       slice
-        .on("mouseover", function(e) {
-          highlightRegion(arc.data.region);
+        .on("mouseover touchstart", showTooltip)
+        .on("mousemove", function(e) {
+          tooltip
+            .style("left", (e.pageX + 12) + "px")
+            .style("top",  (e.pageY - 28) + "px");
+        })
+        .on("mouseout touchend", function() {
+          restoreAll();
+          tooltip.transition().duration(200).style("opacity", 0);
+        });
+    });
+  });
+
+  // LEGEND
+  // Desktop: right column. Mobile: below pies.
+  const pieSectionH = titleOffsetY + rows * (pieR * 2 + labelH + padY);
+
+  if (isMobile) {
+    // Expand SVG height to fit inline legend below pies
+    const legendRows = Object.entries(REGION_COLORS);
+    const legendH    = legendRows.length * 24 + 30;
+    canvas.attr("height", pieSectionH + legendH);
+
+    const legendG = canvas.append("g")
+      .attr("transform", `translate(16, ${pieSectionH})`);
+
+    legendG.append("text")
+      .attr("x", 0).attr("y", 0)
+      .style("font-size", "12px")
+      .style("font-weight", "700")
+      .style("font-family", "Montserrat, sans-serif")
+      .style("fill", "var(--sfo-75-white)")
+      .text("Region");
+
+    legendRows.forEach(([region, color], i) => {
+      const row = legendG.append("g")
+        .attr("transform", `translate(0, ${18 + i * 24})`)
+        .style("cursor", "pointer")
+        .on("click touchstart", function(e) {
+          highlightRegion(region);
+          const px = e.pageX || (e.touches && e.touches[0].pageX);
+          const py = e.pageY || (e.touches && e.touches[0].pageY);
           tooltip.transition().duration(200).style("opacity", 0.9);
           tooltip
-            .html(`
-              <strong>${arc.data.region}</strong><br/>
-              ${d3.format(",.0f")(arc.data.passengers)} passengers<br/>
-              ${pct}% of era total<br/>
-              <span style="opacity:0.7;font-size:11px">${eras[eraKey].label.replace("\n", " ")}</span>
-            `)
+            .html(`<strong>${region}</strong>`)
+            .style("left", (px + 12) + "px")
+            .style("top",  (py - 28) + "px");
+        })
+        .on("mouseout touchend", function() {
+          restoreAll();
+          tooltip.transition().duration(200).style("opacity", 0);
+        });
+
+      // Color swatch
+      row.append("rect")
+        .attr("width", 15).attr("height", 15)
+        .attr("rx", 2)
+        .style("fill", color)
+        .style("fill-opacity", 0.85);
+
+      // Region name
+      row.append("text")
+        .attr("x", 22).attr("y", 12)
+        .style("font-size", "11px")
+        .style("font-family", "Montserrat, sans-serif")
+        .style("fill", "var(--sfo-75-white)")
+        .text(region);
+    });
+
+  } else {
+    const legendX = chartAreaW + 20;
+    const legendY = 50;
+
+    const legendG = canvas.append("g")
+      .attr("transform", `translate(${legendX}, ${legendY})`);
+
+    legendG.append("text")
+      .attr("x", 0).attr("y", 0)
+      .style("font-size", "13px")
+      .style("font-weight", "700")
+      .style("font-family", "Montserrat, sans-serif")
+      .style("fill", "var(--sfo-75-white)")
+      .text("Region");
+
+    Object.entries(REGION_COLORS).forEach(([region, color], i) => {
+      const row = legendG.append("g")
+        .attr("transform", `translate(0, ${20 + i * 28})`)
+        .style("cursor", "pointer")
+        .on("mouseover", function(e) {
+          highlightRegion(region);
+          tooltip.transition().duration(200).style("opacity", 0.9);
+          tooltip
+            .html(`<strong>${region}</strong><br/>Hover a slice for era details`)
             .style("left", (e.pageX + 12) + "px")
             .style("top",  (e.pageY - 28) + "px");
         })
@@ -246,61 +353,33 @@ function drawSmallMultiplesPie(eraData, eras) {
           restoreAll();
           tooltip.transition().duration(200).style("opacity", 0);
         });
+
+      // Color swatch
+      row.append("rect")
+        .attr("width", 18).attr("height", 18)
+        .attr("rx", 3)
+        .style("fill", color)
+        .style("fill-opacity", 0.85);
+
+      // Region name
+      row.append("text")
+        .attr("x", 26).attr("y", 13)
+        .style("font-size", "12px")
+        .style("font-family", "Montserrat, sans-serif")
+        .style("fill", "var(--sfo-75-white)")
+        .text(region);
     });
-  });
-
-  // LEGEND 
-  const legendX = chartAreaW + 20;
-  const legendY = 50;
-
-  const legendG = canvas.append("g")
-    .attr("transform", `translate(${legendX}, ${legendY})`);
-
-  legendG.append("text")
-    .attr("x", 0).attr("y", 0)
-    .style("font-size", "13px")
-    .style("font-weight", "700")
-    .style("font-family", "Montserrat, sans-serif")
-    .style("fill", "var(--sfo-75-white)")
-    .text("Region");
-
-  Object.entries(REGION_COLORS).forEach(([region, color], i) => {
-    const row = legendG.append("g")
-      .attr("transform", `translate(0, ${20 + i * 28})`)
-      .style("cursor", "pointer")
-      .on("mouseover", function(e) {
-        highlightRegion(region);
-        tooltip.transition().duration(200).style("opacity", 0.9);
-        tooltip
-          .html(`<strong>${region}</strong><br/>Hover a slice for era details`)
-          .style("left", (e.pageX + 12) + "px")
-          .style("top",  (e.pageY - 28) + "px");
-      })
-      .on("mousemove", function(e) {
-        tooltip
-          .style("left", (e.pageX + 12) + "px")
-          .style("top",  (e.pageY - 28) + "px");
-      })
-      .on("mouseout", function() {
-        restoreAll();
-        tooltip.transition().duration(200).style("opacity", 0);
-      });
-
-    // Color swatch
-    row.append("rect")
-      .attr("width", 18).attr("height", 18)
-      .attr("rx", 3)
-      .style("fill", color)
-      .style("fill-opacity", 0.85);
-
-    // Region name
-    row.append("text")
-      .attr("x", 26).attr("y", 13)
-      .style("font-size", "12px")
-      .style("font-family", "Montserrat, sans-serif")
-      .style("fill", "var(--sfo-75-white)")
-      .text(region);
-  });
+  }
 }
 
 drawPieCharts();
+
+// Redraw on resize
+let pieResizeTimer;
+window.addEventListener("resize", () => {
+  clearTimeout(pieResizeTimer);
+  pieResizeTimer = setTimeout(() => {
+    d3.select("#pie-container svg").remove();
+    drawPieCharts();
+  }, 250);
+});

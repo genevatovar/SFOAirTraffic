@@ -10,15 +10,31 @@
 function drawSmallMultiples(data) {
   const COLS = 1, ROWS = 2;
 
+  // Responsive sizing — derive panel dimensions from container width
+  const containerEl = document.getElementById("smallmultiples-container");
+  const containerW  = containerEl.clientWidth || 860;
+  const isMobile    = containerW < 500;
+
   // Larger panels for better readability
-  const cellW = 860, cellH = 280;
-  const cellMargin = { top: 50, right: 40, bottom: 50, left: 80 };
+  const cellW = containerW;
+  const cellH = isMobile ? 200 : 280;
+  const cellMargin = {
+    top:    isMobile ? 36 : 50,
+    right:  isMobile ? 16 : 40,
+    bottom: isMobile ? 40 : 50,
+    left:   isMobile ? 52 : 80
+  };
   const panelW = cellW - cellMargin.left - cellMargin.right;
   const panelH = cellH - cellMargin.top  - cellMargin.bottom;
 
-  const outerMargin = { top: 90, right: 40, bottom: 60, left: 40 };
-  const svgW = COLS * cellW + outerMargin.left + outerMargin.right;
-  const svgH = ROWS * cellH + outerMargin.top  + outerMargin.bottom;
+  const outerMargin = {
+    top:    isMobile ? 60 : 90,
+    right:  0,
+    bottom: isMobile ? 40 : 60,
+    left:   0
+  };
+  const svgW = cellW;
+  const svgH = ROWS * cellH + outerMargin.top + outerMargin.bottom;
 
   // CANVAS
   const canvas = d3.select("#smallmultiples-container")
@@ -28,23 +44,25 @@ function drawSmallMultiples(data) {
 
   // TITLE AND SUBTITLE
   canvas.append("text")
-    .attr("x", outerMargin.left + panelW / 2 + cellMargin.left)
-    .attr("y", 28)
+    .attr("x", cellMargin.left + panelW / 2)
+    .attr("y", isMobile ? 18 : 28)
     .attr("text-anchor", "middle")
-    .style("font-size", "16px")
+    .style("font-size", isMobile ? "12px" : "16px")
     .style("font-weight", "700")
     .style("font-family", "Montserrat, sans-serif")
     .style("fill", "var(--sfo-75-white)")
     .text("Monthly Passengers at SFO: Domestic vs. International (2000–2025)");
 
   canvas.append("text")
-    .attr("x", outerMargin.left + panelW / 2 + cellMargin.left)
-    .attr("y", 50)
+    .attr("x", cellMargin.left + panelW / 2)
+    .attr("y", isMobile ? 34 : 50)
     .attr("text-anchor", "middle")
-    .style("font-size", "12px")
+    .style("font-size", isMobile ? "10px" : "12px")
     .style("font-family", "Montserrat, sans-serif")
     .style("fill", "var(--sfo-50-white)")
-    .text("Hover over either panel to compare domestic and international traffic for the same month");
+    .text(isMobile
+      ? "Tap to compare traffic"
+      : "Hover over either panel to compare domestic and international traffic for the same month");
 
   // ORGANIZE DATA — monthly totals per geo_summary
   const segments = ["Domestic", "International"];
@@ -121,8 +139,8 @@ function drawSmallMultiples(data) {
   segments.forEach((geo, i) => {
     const col = i % COLS;
     const row = Math.floor(i / COLS);
-    const tx  = outerMargin.left + col * cellW + cellMargin.left;
-    const ty  = outerMargin.top  + row * cellH  + cellMargin.top;
+    const tx  = cellMargin.left;
+    const ty  = outerMargin.top + row * cellH + cellMargin.top;
 
     const seriesData = flat
       .filter(d => d.geo === geo && d.year >= 2000 && d.year <= 2025)
@@ -158,12 +176,16 @@ function drawSmallMultiples(data) {
         .attr("width",  x1 - x0)
         .attr("height", panelH);
 
-      panel.append("text")
-        .attr("class", "crisis-label")
-        .attr("x", (x0 + x1) / 2)
-        .attr("y", -6)
-        .attr("text-anchor", "middle")
-        .text(b.label);
+      // Only label on first panel to avoid duplication
+      if (i === 0) {
+        panel.append("text")
+          .attr("class", "crisis-label")
+          .attr("x", (x0 + x1) / 2)
+          .attr("y", -6)
+          .attr("text-anchor", "middle")
+          .style("font-size", isMobile ? "8px" : "9px")
+          .text(b.label);
+      }
     });
 
     // Filled area under line
@@ -179,31 +201,31 @@ function drawSmallMultiples(data) {
       .attr("class", "line-path")
       .attr("d", lineGen)
       .style("stroke", colors[geo])
-      .style("stroke-width", 1.8)
+      .style("stroke-width", isMobile ? 1.2 : 1.8)
       .style("fill", "none");
 
     // X axis
     panel.append("g")
       .attr("class", "axis x-axis")
       .attr("transform", `translate(0,${panelH})`)
-      .call(d3.axisBottom(xScale).ticks(10).tickFormat(d3.timeFormat("%Y")));
+      .call(d3.axisBottom(xScale).ticks(isMobile ? 5 : 10).tickFormat(d3.timeFormat("%Y")));
 
     // Y axis
     panel.append("g")
       .attr("class", "axis y-axis")
       .call(
         d3.axisLeft(yScale)
-          .ticks(4)
+          .ticks(isMobile ? 3 : 4)
           .tickFormat(d => d >= 1e6 ? (d / 1e6).toFixed(1) + "M" : (d / 1e3).toFixed(0) + "K")
       );
 
     // Panel title
     panel.append("text")
       .attr("x", panelW / 2)
-      .attr("y", -20)
+      .attr("y", isMobile ? -14 : -20)
       .attr("text-anchor", "middle")
       .attr("class", "panel-title")
-      .style("font-size", "13px")
+      .style("font-size", isMobile ? "11px" : "13px")
       .style("font-weight", "700")
       .style("fill", colors[geo])
       .text(geo);
@@ -215,10 +237,12 @@ function drawSmallMultiples(data) {
       .attr("height", panelH)
       .style("fill", "transparent")
       .style("cursor", "crosshair")
-      .on("mousemove", function(e) {
-        const [mx] = d3.pointer(e);
+      .on("mousemove touchmove", function(e) {
+        const eventX    = e.touches ? e.touches[0].clientX : e.clientX;
+        const rect      = this.getBoundingClientRect();
+        const mx        = eventX - rect.left;
         const hoverDate = xScale.invert(mx);
-        const bisector = d3.bisector(d => d.date).left;
+        const bisector  = d3.bisector(d => d.date).left;
 
         // Sync crosshair across both panels at the same date
         panelRefs.forEach(ref => {
@@ -240,6 +264,9 @@ function drawSmallMultiples(data) {
         const intlD = intlRef.seriesData[Math.min(bisector(intlRef.seriesData, hoverDate, 1), intlRef.seriesData.length - 1)];
         if (!domD || !intlD) return;
 
+        const px = e.touches ? e.touches[0].pageX : e.pageX;
+        const py = e.touches ? e.touches[0].pageY : e.pageY;
+
         tooltip.transition().duration(100).style("opacity", 0.9);
         tooltip
           .html(`
@@ -247,10 +274,10 @@ function drawSmallMultiples(data) {
             <span style="color:#378ADD">▬ Domestic: ${d3.format(",.0f")(domD.passengers)}</span><br/>
             <span style="color:#1D9E75">▬ International: ${d3.format(",.0f")(intlD.passengers)}</span>
           `)
-          .style("left", (e.pageX + 12) + "px")
-          .style("top",  (e.pageY - 28) + "px");
+          .style("left", (px + 12) + "px")
+          .style("top",  (py - 28) + "px");
       })
-      .on("mouseout", function() {
+      .on("mouseout touchend", function() {
         // Hide crosshairs on all panels on mouse leave
         panelRefs.forEach(ref => {
           ref.crosshairLine.style("display", "none");
@@ -267,7 +294,7 @@ function drawSmallMultiples(data) {
       .style("display", "none");
 
     const dotMarker = panel.append("circle")
-      .attr("r", 4)
+      .attr("r", isMobile ? 3 : 4)
       .style("fill", colors[geo])
       .style("stroke", "white")
       .style("stroke-width", 1.5)
@@ -277,23 +304,25 @@ function drawSmallMultiples(data) {
   });
 
   // SHARED AXIS LABELS
-  const panelAreaCenterX = outerMargin.left + cellMargin.left + panelW / 2;
-  const panelAreaCenterY = outerMargin.top  + (ROWS * cellH) / 2;
+  if (!isMobile) {
+    const panelAreaCenterX = cellMargin.left + panelW / 2;
+    const panelAreaCenterY = outerMargin.top  + (ROWS * cellH) / 2;
 
-  canvas.append("text")
-    .attr("class", "axisLabel")
-    .attr("x", panelAreaCenterX)
-    .attr("y", outerMargin.top + ROWS * cellH + 42)
-    .attr("text-anchor", "middle")
-    .text("Year");
+    canvas.append("text")
+      .attr("class", "axisLabel")
+      .attr("x", panelAreaCenterX)
+      .attr("y", outerMargin.top + ROWS * cellH + 42)
+      .attr("text-anchor", "middle")
+      .text("Year");
 
-  canvas.append("text")
-    .attr("class", "axisLabel")
-    .attr("transform", "rotate(-90)")
-    .attr("x", -panelAreaCenterY)
-    .attr("y", 18)
-    .attr("text-anchor", "middle")
-    .text("Passengers per month");
+    canvas.append("text")
+      .attr("class", "axisLabel")
+      .attr("transform", "rotate(-90)")
+      .attr("x", -panelAreaCenterY)
+      .attr("y", 18)
+      .attr("text-anchor", "middle")
+      .text("Passengers per month");
+  }
 }
 
 function loadAndDrawSmallMultiples() {
@@ -308,6 +337,16 @@ function loadAndDrawSmallMultiples() {
       d.year && d.month && d.geo_summary && !isNaN(d.passenger_count)
     );
     drawSmallMultiples(validData);
+
+    // Redraw on resize
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        d3.select("#smallmultiples-container svg").remove();
+        drawSmallMultiples(validData);
+      }, 250);
+    });
   })
   .catch(err => {
     console.log("data loading error", err);
