@@ -372,8 +372,228 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-size: 12px;
   line-height: 1.6;
-  pointer-events: none;   /* so it doesn't interfere with mouse events */
+  pointer-events: none;
   border: 1px solid var(--sfo-25-black);
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   z-index: 100;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE — 768px and below
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* ── Body ── */
+  body {
+    font-size: 15px;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    padding: 3rem 1.25rem;
+    min-height: 100svh; /* safe-area-aware on iOS */
+    text-align: center;
+    justify-content: flex-end;
+    padding-bottom: 3.5rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.2rem, 11vw, 3.5rem);
+    margin-bottom: 0.75rem;
+  }
+
+  .hero p {
+    font-size: clamp(0.95rem, 4vw, 1.15rem);
+  }
+
+  .hero .hero-tagline {
+    font-size: clamp(1rem, 4.5vw, 1.35rem);
+    margin-top: 0.4rem;
+  }
+
+  .hero-label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── Intro ── */
+  .intro {
+    margin-top: 3.5rem;
+    margin-bottom: 3rem;
+    padding: 0 1.25rem;
+  }
+
+  .intro h3 {
+    font-size: 1.45rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .intro p {
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  /* ── Viz sections ── */
+  .viz-section {
+    padding: 0 1rem;
+    margin: 2.5rem auto;
+  }
+
+  .viz-title {
+    font-size: 1.05rem;
+  }
+
+  /* SVGs: allow horizontal scroll rather than clipping on tiny viewports */
+  .viz-section svg,
+  .story-viz svg {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  /* ── Scrollytelling steps ── */
+  .story-step {
+    padding: 3rem 1.25rem;
+  }
+
+  .story-header {
+    margin-bottom: 1.75rem;
+  }
+
+  .story-header h2 {
+    font-size: clamp(1.2rem, 6vw, 2rem);
+  }
+
+  .step-number {
+    font-size: 10px;
+    margin-bottom: 0.5rem;
+  }
+
+  .story-body p {
+    font-size: 0.9rem;
+    line-height: 1.75;
+  }
+
+  .story-viz {
+    margin-bottom: 1.75rem;
+    /* Let D3 SVGs scroll horizontally on very small screens */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #step-pie .story-viz {
+    max-width: 100%;
+  }
+
+  /* ── Era toggle buttons ── */
+  .era-toggle {
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .era-btn {
+    font-size: 11px;
+    padding: 0.45rem 0.9rem;
+    /* Ensure tap targets meet 44px minimum */
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* ── D3 axis text — slightly smaller on mobile ── */
+  .axis text {
+    font-size: 9px;
+  }
+
+  .axisLabel {
+    font-size: 10px;
+  }
+
+  .panel-title {
+    font-size: 10px;
+  }
+
+  .legend-title {
+    font-size: 11px;
+  }
+
+  .legend-label {
+    font-size: 10px;
+  }
+
+  .crisis-label {
+    font-size: 8px;
+  }
+
+  /* ── Tooltip ── */
+  .tooltip {
+    font-size: 11px;
+    padding: 0.5rem 0.75rem;
+    /* Keep tooltips from running off screen edges */
+    max-width: calc(100vw - 2rem);
+  }
+
+  /* ── Outro ── */
+  .outro {
+    padding: 3rem 1.25rem;
+    min-height: 40vh;
+  }
+
+  .outro h2 {
+    font-size: clamp(1.3rem, 6vw, 2rem);
+    margin-bottom: 0.75rem;
+  }
+
+  .outro p {
+    font-size: 12px;
+  }
+
+  /* ── Reduce scroll animation shift on mobile ── */
+  .story-header,
+  .story-viz,
+  .story-body {
+    transform: translateY(20px); /* less dramatic on small screens */
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   EXTRA SMALL — 480px and below (phones in portrait)
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+
+  .hero {
+    padding: 2rem 1rem 3rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 13vw, 2.8rem);
+  }
+
+  .intro {
+    margin-top: 2.5rem;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+  }
+
+  .intro h3 {
+    font-size: 1.25rem;
+  }
+
+  .story-step {
+    padding: 2.5rem 1rem;
+  }
+
+  .era-toggle {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .era-btn {
+    text-align: center;
+    justify-content: center;
+  }
+
+  .outro {
+    padding: 2.5rem 1rem;
+  }
 }
