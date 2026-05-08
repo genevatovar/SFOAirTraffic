@@ -336,7 +336,8 @@ function drawHeatmap(data) {
     .attr("x", legendWidth / 2)
     .attr("y", -6)
     .attr("text-anchor", "middle")
-    .style("font-size", isMobile ? "10px" : "12px")
+    .style("font-style", "bold")
+    .style("font-size", "bold", isMobile ? "10px" : "12px")
     .style("font-family", "Montserrat, sans-serif")
     .style("fill", "var(--sfo-50-white)")
     .text("Passengers per month");
