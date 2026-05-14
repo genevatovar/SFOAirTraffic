@@ -149,6 +149,37 @@
   <p>© Geneva Tovar 2026 · Data: Air Traffic Passenger Statistics · SF Airport Commission via DataSF</p>
 </section>
 
+<!-- ── Methodology ───────────────────────────────────────────────────────── -->
+<section class="methodology">
+  <div class="methodology-inner">
+    <div class="methodology-block">
+      <h2 class="methodology-title">Methodology</h2>
+      <p>The dataset is the Air Traffic Passenger Statistics published by the SF Airport Commission via the <a href="https://data.sfgov.org/Transportation/Air-Traffic-Passenger-Statistics/rkru-6vcg" target="_blank">DataSF Open Data Portal</a>. Rows were filtered to enplaned passengers only. Claude AI was used to parse <code>Activity_Period</code> into a date format, filter to enplaned rows, confirm totals, and clean airline naming inconsistencies. The dataset was also made responsive to tablet and mobile viewports with AI assistance.</p>
+    </div>
+
+    <div class="methodology-block">
+      <p>All in-browser processing and rendering is handled by <a href="https://d3js.org/" target="_blank">D3.js</a>. Scrolling behavior is managed by <a href="https://github.com/russellsamora/scrollama" target="_blank">Scrollama.js</a>, using examples provided by Professor Joshi. Scrollytelling structure informed by <a href="https://pudding.cool/process/how-to-implement-scrollytelling/" target="_blank">The Pudding's scrollytelling guide</a>.</p>
+    </div>
+
+    <div class="methodology-sources">
+      <p class="methodology-meta">Data sources</p>
+      <ul>
+        <li><a href="https://data.sfgov.org/Transportation/Air-Traffic-Passenger-Statistics/rkru-6vcg" target="_blank">Air Traffic Passenger Statistics — SF Airport Commission via DataSF</a></li>
+        <li><a href="https://d3js.org/" target="_blank">D3.js</a></li>
+        <li><a href="https://github.com/russellsamora/scrollama" target="_blank">Scrollama.js</a></li>
+        <li><a href="https://pudding.cool/process/how-to-implement-scrollytelling/" target="_blank">"How to Implement Scrollytelling" — The Pudding</a></li>
+        <li><a href="https://fonts.google.com/" target="_blank">Google Fonts (Montserrat)</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="methodology-footer">
+    <span>Geneva Tovar</span>
+    <span>CS 360 · Data Visualizations · 2026</span>
+    <a href="https://data.sfgov.org/Transportation/Air-Traffic-Passenger-Statistics/rkru-6vcg" target="_blank">Dataset</a>
+  </div>
+</section>
+
 <!-- Chart scripts -->
 <script src="js/heatmap.js"></script>
 <script src="js/smallmultiples.js"></script>

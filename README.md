@@ -228,6 +228,6 @@ Van Wijk, Jarke, and Edward Van Selow. *Cluster and Calendar Based Visualization
 
 - Dataset: Air Traffic Passenger Statistics — SF Airport Commission via DataSF Open Data Portal: https://data.sfgov.org/Transportation/Air-Traffic-Passenger-Statistics/rkru-6vcg
 
-- Claude AI used to parse Activity_Period into a date format, filter to Enplaned rows, and confirm the totals look right. Clean up airline naming inconsistencies. Also used to make visualizations responsive to tablet/iphone devices. 
+- Claude AI used to parse Activity_Period into a date format, filter to Enplaned rows, and confirm the totals look right. Clean up airline naming inconsistencies. Used to make visualizations responsive to tablet/iphone devices. Used to clean up CSS styling.
 
 - Used Scrollama examples provided by Professor Joshi
